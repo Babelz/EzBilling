@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<EzBillingDatabase>
+  <Companies>
+    <Company Name="Perkele" Street="asdasdasd" City="asdasda" PostalCode="" CompanyID="" BankAccountNumber="" BankName="" BankBIC="" BillerName="" PhoneNumber="" EmailAddress="" />
+  </Companies>
+  <Clients>
+    <Client Name="asd" Street="asd" City="asd" PostalCode="asd" />
+    <Client Name="Jeesus" Street="perse" City="" PostalCode="" />
+    <Client Name="Jukka Palmu" Street="Pämpyläntie 21 A1" City="Rovaniemi" PostalCode="96200" />
+    <Client Name="Jukka Palmu" Street="" City="Rovaniemi" PostalCode="96200" />
+    <Client Name="Jeesus PErse" Street="" City="" PostalCode="" />
+  </Clients>
+  <Bills></Bills>
+</EzBillingDatabase>

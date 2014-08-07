@@ -12,6 +12,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.ComponentModel;
+using EzBilling.Database;
+using EzBilling.Database.Objects;
 
 namespace EzBilling
 {
@@ -20,14 +22,19 @@ namespace EzBilling
         #region Vars
         private readonly ClientInformationWindow clientInfoWindow;
         private readonly CompanyInformationWindow companyInfoWindow;
+
+        private readonly XmlDatabaseConnection database;
         #endregion
 
         public MainWindow()
         {
             InitializeComponent();
 
-            clientInfoWindow = new ClientInformationWindow();
-            companyInfoWindow = new CompanyInformationWindow();
+            database = new XmlDatabaseConnection(string.Format(@"{0}\db.xml", AppDomain.CurrentDomain.BaseDirectory));
+            database.OpenConnection();
+
+            clientInfoWindow = new ClientInformationWindow(database);
+            companyInfoWindow = new CompanyInformationWindow(database);
 
             clientInfoWindow.Closing += new CancelEventHandler(clientInfoWindow_Closing);
             companyInfoWindow.Closing += new CancelEventHandler(companyInfoWindow_Closing);

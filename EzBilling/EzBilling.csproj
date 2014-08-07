@@ -77,6 +77,16 @@
     <Compile Include="CompanyInformationWindow.xaml.cs">
       <DependentUpon>CompanyInformationWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Database\BillingDatabaseConnection.cs" />
+    <Compile Include="Database\Objects\ClientInformation.cs" />
+    <Compile Include="Database\Objects\CompanyInformation.cs" />
+    <Compile Include="Database\Serialization\Attributes.cs" />
+    <Compile Include="Database\Serialization\DatabaseObjectSerializer.cs" />
+    <Compile Include="Database\XmlDatabaseConnection.cs" />
+    <Compile Include="Delegates.cs" />
+    <Compile Include="EventArgs.cs" />
+    <Compile Include="Exceptions.cs" />
+    <Compile Include="InformationWindowHandler.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -106,6 +116,7 @@
     </None>
     <AppDesigner Include="Properties\" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
