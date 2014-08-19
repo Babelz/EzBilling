@@ -32,6 +32,9 @@ namespace EzBilling
 
         #region Vars
         private readonly InformationWindowController<ClientInformation> controller;
+
+        private readonly EzBillingDatabase database;
+
         #endregion
 
         #region Properties
@@ -48,7 +51,7 @@ namespace EzBilling
             ClientWindowViewModel.Items = new ObservableCollection<ClientInformation>();
 
             InitializeComponent();
-
+           
             DataContext = this;
 
             controller = new InformationWindowController<ClientInformation>(ClientWindowViewModel, clients_ComboBox, 
@@ -61,6 +64,9 @@ namespace EzBilling
             });
 
             // TODO: load client informations from database.
+            database = new EzBillingDatabase();
+            LoadInformationsFromDatabase();
+       
         }
 
         private Dictionary<string, string> GetFieldInformations()
@@ -95,6 +101,12 @@ namespace EzBilling
         }
         private void LoadInformationsFromDatabase()
         {
+            var list = database.GetClientInformations();
+            ClientWindowViewModel.Items.Clear();
+            for (int i = 0; i < list.Count; i++)
+            {
+                ClientWindowViewModel.Items.Add(list[i]);
+            }
         }
 
         #region Event handlers
