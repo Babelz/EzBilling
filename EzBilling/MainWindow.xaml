@@ -18,25 +18,24 @@
         <Menu Grid.ColumnSpan="3">
             <!-- Billing menu  -->
             <MenuItem Header="Laskutus" Margin="3">
-                <MenuItem Header="Lataa lasku" Name="loadBill_MenuItem"/>
-                <MenuItem Header="Uusi lasku" Name="newBill_MenuItem"/>
-                <MenuItem Header="Tallenna lasku" Name="saveBill_MenuItem"/>
+                <MenuItem Header="Lataa lasku" Name="loadBill_MenuItem" Click="loadBill_MenuItem_Click"/>
+                <MenuItem Header="Uusi lasku" Name="newBill_MenuItem" Click="newBill_MenuItem_Click"/>
+                <MenuItem Header="Tallenna lasku" Name="saveBill_MenuItem" Click="saveBill_MenuItem_Click"/>
                 <Separator/>
-                <MenuItem Header="Tulosta lasku" Name="printBill_MenuItem"/>
+                <MenuItem Header="Tulosta lasku" Name="printBill_MenuItem" Click="printBill_MenuItem_Click"/>
                 <Separator/>
-                <MenuItem Header="Sulje ohjelma" Name="closeProgram_MenuItem"/>
+                <MenuItem Header="Sulje ohjelma" Name="closeProgram_MenuItem" Click="closeProgram_MenuItem_Click"/>
             </MenuItem>
             
             <!-- Manage menu -->
             <MenuItem Header="Hallinnoi" Margin="3">
-                <MenuItem Header="Laskuttajien tietoja" Name="editCompanyInfos_MenuItem" Click="editCompanyInfos_MenuItem_Click"/>
+                <MenuItem Header="Yrityksien tietoja" Name="editCompanyInfos_MenuItem" Click="editCompanyInfos_MenuItem_Click"/>
                 <MenuItem Header="Asiakkaitten tietoja" Name="editClientInfos_MenuItem" Click="editClientInfos_MenuItem_Click"/>
             </MenuItem>
             
             <!-- Help menu -->
             <MenuItem Header="Ohje" Margin="3">
-                <MenuItem Header="Käyttöohjeita" Name="instructions_MenuItem"/>
-                <MenuItem Header="Tietoja ohjelmasta" Name="about_MenuItem"/>
+                <MenuItem Header="Tietoja ohjelmasta" Name="about_MenuItem" Click="about_MenuItem_Click"/>
             </MenuItem>
         </Menu>
 
@@ -82,7 +81,11 @@
             <Label Content="Sähköposti: " Grid.Row="12" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
 
             <!-- Company information data fields -->
-            <ComboBox Name="companyName_ComboBox" Grid.Row="1" Grid.Column="1" Margin="2"/>
+            <ComboBox Name="companyName_ComboBox" Grid.Row="1" Grid.Column="1" Margin="2"
+                      ItemsSource="{Binding CompanyInformations}"
+                      DisplayMemberPath="Name"
+                      SelectedValue="{Binding SelectedCompanyInformation}"
+                      SelectedValuePath="{Binding SelectedCompanyInformation.Name}"/>
             <Label Name="companyStreet_Label" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
             <Label Name="companyCity_Label" Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
             <Label Name="companyPostalCode_Label" Grid.Row="4" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>

@@ -12,6 +12,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.ComponentModel;
+using EzBilling.DatabaseObjects;
+using System.Collections.ObjectModel;
 
 namespace EzBilling
 {
@@ -22,15 +24,43 @@ namespace EzBilling
         private readonly CompanyInformationWindow companyInformationWindow;
         #endregion
 
+        #region Properties
+        public ObservableCollection<ClientInformation> ClientInformations
+        {
+            get;
+            private set;
+        }
+        public ClientInformation SelectedClientInformation
+        {
+            get;
+            private set;
+        }
+        public ObservableCollection<CompanyInformation> CompanyInformations
+        {
+            get;
+            private set;
+        }
+        public CompanyInformation SelectedCompanyInformation
+        {
+            get;
+            private set;
+        }
+        #endregion
+
         public MainWindow()
         {
             InitializeComponent();
+
+            ClientInformations = new ObservableCollection<ClientInformation>();
+            CompanyInformations = new ObservableCollection<CompanyInformation>();
 
             clientInformationWindow = new ClientInformationWindow();
             companyInformationWindow = new CompanyInformationWindow();
 
             clientInformationWindow.Closing += new CancelEventHandler(window_Closing);
             companyInformationWindow.Closing += new CancelEventHandler(window_Closing);
+
+            DataContext = this;
         }
 
         #region Event handlers
@@ -62,7 +92,31 @@ namespace EzBilling
         }
         #endregion
 
-        #region Manage menu event handlers
+        #region Menu event handlers
+        private void loadBill_MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+        private void newBill_MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+        private void saveBill_MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+        private void printBill_MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+        private void closeProgram_MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+        private void about_MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
         private void editCompanyInfos_MenuItem_Click(object sender, RoutedEventArgs e)
         {
             companyInformationWindow.Show();
