@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 
@@ -88,6 +89,24 @@ namespace EzBilling.DatabaseObjects
         public CompanyInformation()
             : base()
         {
+        }
+
+        public override void Fill(DataRow row)
+        {
+            ID = row["company_id"].ToString();
+            Name = row["name"].ToString();
+            City = row["city"].ToString();
+            PostalCode = row["postal_code"].ToString();
+            // TODO Add address to SQL
+            //c.Street = row["address"].ToString();
+
+            BankName = row["bank_name"].ToString();
+            BankBIC = row["bank_bic"].ToString();
+            AccountNumber = row["bank_account"].ToString();
+
+            BillerName = row["biller_name"].ToString();
+            Email = row["email"].ToString();
+            Phone = row["phone_number"].ToString();
         }
     }
 }

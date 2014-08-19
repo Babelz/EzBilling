@@ -22,6 +22,20 @@ namespace EzBilling.DatabaseObjects
 
         #region Methods
 
+        #region Client
+
+        public ClientInformation GetClientInformation(string id)
+        {
+            DataTable result = database.Select("SELECT * FROM client where client_id = @client_id", new Dictionary<string, object>
+            {
+                {"@client_id", id}
+            });
+            if (result.Rows.Count == 0) throw new ArgumentException("There is no client_id " + id, "id");
+            ClientInformation c = new ClientInformation();
+            c.Fill(result.Rows[0]);
+            return c;
+        }
+
         public List<ClientInformation> GetClientInformations()
         {
             database.Open();
@@ -30,17 +44,36 @@ namespace EzBilling.DatabaseObjects
             foreach (DataRow row in table.Rows)
             {
                 ClientInformation c = new ClientInformation();
-                c.ID = row["client_id"].ToString();
-                c.Name = row["name"].ToString();
-                c.PostalCode = row["postal_code"].ToString();
-                c.Street = row["address"].ToString();
-                c.City = row["city"].ToString();
+                c.Fill(row);
                 r.Add(c);
             }
 
             database.Close();
             return r;
         }
+
+        #endregion
+
+        public List<CompanyInformation> GetCompanyInformations()
+        {
+            List<CompanyInformation> companies = new List<CompanyInformation>();
+            database.Open();
+
+            DataTable table = database.Select("select * from company");
+
+            foreach (DataRow row in table.Rows)
+            {
+                CompanyInformation c = new CompanyInformation();
+                c.Fill(row);
+
+                companies.Add(c);
+            }
+
+            database.Close();
+            return companies;
+        }
+
+        
 
 
         #endregion

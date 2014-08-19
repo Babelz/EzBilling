@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 
@@ -25,8 +26,10 @@ namespace EzBilling.DatabaseObjects
         }
         #endregion
 
-        public DatabaseObject()
+        protected DatabaseObject()
         {
         }
+
+        public abstract void Fill(DataRow info);
     }
 }

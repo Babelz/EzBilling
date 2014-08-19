@@ -35,6 +35,8 @@ namespace EzBilling
 
         #region Vars
         private readonly InformationWindowController<CompanyInformation> controller;
+
+        private readonly EzBillingDatabase database;
         #endregion
 
         #region Properties
@@ -70,6 +72,8 @@ namespace EzBilling
                 companyEmailAddress_TextBox
             });
 
+            database = new EzBillingDatabase();
+            LoadInformationsFromDatabase();
             // TODO: load company informations from database.
         }
 
@@ -119,6 +123,13 @@ namespace EzBilling
         }
         private void LoadInformationsFromDatabase()
         {
+            var list = database.GetCompanyInformations();
+            CompanyWindowViewModel.Items.Clear();
+            foreach (var companyInformation in list)
+            {
+                CompanyWindowViewModel.Items.Add(companyInformation);
+            }
+            
         }
 
         #region Event handlers
