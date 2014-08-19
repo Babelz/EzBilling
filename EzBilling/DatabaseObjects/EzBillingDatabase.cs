@@ -52,6 +52,27 @@ namespace EzBilling.DatabaseObjects
             return r;
         }
 
+        public bool Update(ClientInformation c)
+        {
+            int rows = database.Update("client", new Dictionary<string, object>
+            {
+                { "name", c.Name },
+                { "city", c.City },
+                { "postal_code", c.PostalCode },
+                { "address", c.Street }
+            }, "client_id", c.ID);
+            return rows > 0;
+        }
+
+        public bool Delete(ClientInformation c)
+        {
+
+            return database.Delete("client", new Dictionary<string, string>
+            {
+                {"client_id", c.ID}
+            }) > 0;
+        }
+
         #endregion
 
         public List<CompanyInformation> GetCompanyInformations()

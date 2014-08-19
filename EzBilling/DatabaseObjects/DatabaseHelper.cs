@@ -146,14 +146,7 @@ namespace EzBilling.DatabaseObjects
             }
             queryBuilder.Remove(queryBuilder.Length - 1, 1);
             queryBuilder.Append(" WHERE ");
-            foreach (var kv in condition)
-            {
-                queryBuilder.Append(kv.Key);
-                queryBuilder.Append(" = ");
-                queryBuilder.Append("@x" + kv.Key);
-                queryBuilder.Append(" AND ");
-            }
-            queryBuilder.Remove(queryBuilder.Length - 5, 5);
+            queryBuilder.Append(CreateConditionString("@x", condition));
             queryBuilder.Append(";");
 
             command.CommandText = queryBuilder.ToString();
@@ -168,6 +161,23 @@ namespace EzBilling.DatabaseObjects
             }
 
             return command.ExecuteNonQuery();
+        }
+
+        #endregion
+
+        #region Delete
+
+        public int Delete(string table, Dictionary<string, string> condition)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("DELETE FROM ");
+            sb.Append(table);
+            sb.Append(" WHERE ");
+            sb.Append(CreateConditionString("@x", condition));
+
+            command.CommandText = sb.ToString();
+            return command.ExecuteNonQuery();
+
         }
 
         #endregion
@@ -246,6 +256,27 @@ namespace EzBilling.DatabaseObjects
             }
 
             return new List<SQLiteParameter>();
+        }
+
+        /// <summary>
+        /// Creates a string which can be used in where clauses
+        /// </summary>
+        /// <param name="prefix">Prefix for variable (eg. @v)</param>
+        /// <param name="parameters">Parameters to store in string</param>
+        /// <returns></returns>
+        private string CreateConditionString(string prefix, Dictionary<string, string> parameters)
+        {
+            if (parameters.Count == 0) throw new ArgumentException("parameters is empty", "parameters");
+            StringBuilder sb = new StringBuilder();
+            foreach (var v in parameters)
+            {
+                sb.Append(v.Key);
+                sb.Append(" = ");
+                sb.Append(string.Format("{0}{1}", prefix, v.Key));
+                sb.Append(" AND ");
+            }
+            sb.Remove(sb.Length - 5, 5);
+            return sb.ToString();
         }
         #endregion
     }
