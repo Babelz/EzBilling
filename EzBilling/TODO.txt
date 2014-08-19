@@ -1,0 +1,1 @@
+﻿1) Logic in client and company info windows is pretty similiar (duplication)

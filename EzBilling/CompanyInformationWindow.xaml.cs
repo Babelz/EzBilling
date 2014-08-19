@@ -10,144 +10,139 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using EzBilling.Database;
-using EzBilling.Database.Serialization;
-using EzBilling.Database.Objects;
+using EzBilling.Components;
+using System.Collections.ObjectModel;
+using EzBilling.DatabaseObjects;
 
 namespace EzBilling
 {
-    /// <summary>
-    /// Interaction logic for CompanyInformationWindow.xaml
-    /// </summary>
     public partial class CompanyInformationWindow : Window
     {
-        #region Vars
-        private readonly XmlDatabaseConnection database;
-        private readonly DatabaseObjectSerializer serializer;
-        private readonly InformationWindowHandler informationHandler;
-
-        private List<CompanyInformation> companyInformations;
+        #region Constants
+        // Dict keys.
+        private const string NAME = "Name";
+        private const string STREET = "Street";
+        private const string CITY = "City";
+        private const string POSTALCODE = "PostalCode";
+        private const string ID = "ID";
+        private const string ACCOUNTNUMBER = "AccountNumber";
+        private const string BANKNAME = "BankName";
+        private const string BANKBIC = "BankBIC";
+        private const string BILLERNAME = "BillerName";
+        private const string PHONENUMBER = "PhoneNumber";
+        private const string EMAILADDRESS = "EmailAddress";
         #endregion
 
-        public CompanyInformationWindow(XmlDatabaseConnection database)
+        #region Vars
+        private readonly InformationWindowController<CompanyInformation> controller;
+        #endregion
+
+        #region Properties
+        public InformationWindowViewModel<CompanyInformation> CompanyWindowViewModel
         {
+            get;
+            private set;
+        }
+        #endregion
+
+        public CompanyInformationWindow()
+        {
+            CompanyWindowViewModel = new InformationWindowViewModel<CompanyInformation>();
+            CompanyWindowViewModel.Items = new ObservableCollection<CompanyInformation>();
+
             InitializeComponent();
 
-            this.database = database;
+            DataContext = this;
 
-            serializer = new DatabaseObjectSerializer();
-            companyInformations = new List<CompanyInformation>();
-            informationHandler = new InformationWindowHandler(this, database, serializer, companies_ComboBox);
-            
-        }
-
-        private void ResetFields()
-        {
-            companyName_TextBox.Clear();
-            companyStreet_TextBox.Clear();
-            companyCity_TextBox.Clear();
-            companyPostalCode_TextBox.Clear();
-            companyID_TextBox.Clear();
-            companyAccountNumber_TextBox.Clear();
-            companyBankName_TextBox.Clear();
-            companyBankBIC_TextBox.Clear();
-            companyBillerName_TextBox.Clear();
-            companyPhoneNumber_TextBox.Clear();
-            companyEmailAddress_TextBox.Clear();
-
-            companies_ComboBox.SelectedIndex = -1;
-        }
-        private void AssingToObjectFields(CompanyInformation companyInformation)
-        {
-            companyInformation.Name = companyName_TextBox.Text;
-            companyInformation.Street = companyStreet_TextBox.Text;
-            companyInformation.City = companyCity_TextBox.Text;
-            companyInformation.PostalCode = companyPostalCode_TextBox.Text;
-            companyInformation.CompanyID = companyID_TextBox.Text;
-            companyInformation.BankAccountNumber = companyAccountNumber_TextBox.Text;
-            companyInformation.BankName = companyBankName_TextBox.Text;
-            companyInformation.BankBIC = companyBankBIC_TextBox.Text;
-            companyInformation.BillerName = companyBillerName_TextBox.Text;
-            companyInformation.PhoneNumber = companyPhoneNumber_TextBox.Text;
-            companyInformation.EmailAddress = companyEmailAddress_TextBox.Text;
-        }
-        private void AssingToFields(CompanyInformation companyInformation)
-        {
-            companyName_TextBox.Text = companyInformation.Name;
-            companyStreet_TextBox.Text = companyInformation.Street;
-            companyCity_TextBox.Text = companyInformation.City;
-            companyPostalCode_TextBox.Text = companyInformation.PostalCode;
-            companyID_TextBox.Text = companyInformation.CompanyID;
-            companyAccountNumber_TextBox.Text = companyInformation.BankAccountNumber;
-            companyBankName_TextBox.Text = companyInformation.BankName;
-            companyBankBIC_TextBox.Text = companyInformation.BankBIC;
-            companyBillerName_TextBox.Text = companyInformation.BillerName;
-            companyPhoneNumber_TextBox.Text = companyInformation.PhoneNumber;
-            companyEmailAddress_TextBox.Text = companyInformation.EmailAddress;
-        }
-        private void AddNewCompanies()
-        {
-            ResetFields();
-
-            companyInformations = serializer.Deserialize<CompanyInformation>(database.FindItemRoot("Companies").Elements().ToList());
-
-            for (int i = 0; i < companyInformations.Count; i++)
+            controller = new InformationWindowController<CompanyInformation>(CompanyWindowViewModel, companies_ComboBox,
+                new TextBox[]
             {
-                if (companies_ComboBox.Items.Contains(companyInformations[i]))
-                {
-                    continue;
-                }
+                companyName_TextBox,
+                companyStreet_TextBox,
+                companyCity_TextBox,
+                companyPostalCode_TextBox,
+                companyID_TextBox,
+                companyAccountNumber_TextBox,
+                companyBankName_TextBox,
+                companyBankBIC_TextBox,
+                companyBillerName_TextBox,
+                companyPhoneNumber_TextBox,
+                companyEmailAddress_TextBox
+            });
 
-                companies_ComboBox.Items.Add(companyInformations[i].Name);
-            }
+            // TODO: load company informations from database.
+        }
+
+        private Dictionary<string, string> GetFieldInformations()
+        {
+            return new Dictionary<string, string>()
+            {
+                { NAME, companyName_TextBox.Text },
+                { STREET, companyStreet_TextBox.Text },
+                { CITY, companyCity_TextBox.Text },
+                { POSTALCODE, companyPostalCode_TextBox.Text },
+                { ID, companyID_TextBox.Text },
+                { ACCOUNTNUMBER, companyAccountNumber_TextBox.Text },
+                { BANKNAME, companyBankName_TextBox.Text },
+                { BANKBIC, companyBankBIC_TextBox.Text },
+                { BILLERNAME, companyBillerName_TextBox.Text },
+                { PHONENUMBER, companyPhoneNumber_TextBox.Text },
+                { EMAILADDRESS, companyEmailAddress_TextBox.Text },
+            };
+        }
+        private CompanyInformation BuildCompanyInformation()
+        {
+            Dictionary<string, string> valuePairs = GetFieldInformations();
+
+            CompanyInformation companyInformation = new CompanyInformation()
+            {
+                Name = valuePairs[NAME],
+                Street = valuePairs[STREET],
+                City = valuePairs[CITY],
+                PostalCode = valuePairs[POSTALCODE],
+                ID = valuePairs[ID],
+                AccountNumber = valuePairs[ACCOUNTNUMBER],
+                BankName = valuePairs[BANKNAME],
+                BankBIC = valuePairs[BANKBIC],
+                BillerName = valuePairs[BILLERNAME],
+                Phone = valuePairs[PHONENUMBER],
+                Email = valuePairs[EMAILADDRESS]
+            };
+
+            return companyInformation;
+        }
+        private void RemoveFromDatabase(CompanyInformation companyInformation)
+        {
+        }
+        private void AddToDatabase(CompanyInformation companyInformation)
+        {
+        }
+        private void LoadInformationsFromDatabase()
+        {
         }
 
         #region Event handlers
-        private void Window_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
-        {
-            if (IsVisible)
-            {
-                AddNewCompanies();
-            }
-        }
-        private void companies_ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            CompanyInformation companyInformation = companyInformations.FirstOrDefault(i => i.Name == (string)companies_ComboBox.SelectedItem);
-
-            informationHandler.OnSelectedItemChanged(
-                deleteCompanyInformation_Button,
-                companyInformation,
-                AssingToFields);
-        }
         private void saveCompanyInformation_Button_Click(object sender, RoutedEventArgs e)
         {
-            CompanyInformation companyInformation = companyInformations.FirstOrDefault(i => i.Name == (string)companies_ComboBox.SelectedItem);
+            CompanyInformation info = BuildCompanyInformation();
 
-            bool added = informationHandler.OnSave<CompanyInformation>(
-                companyInformation,
-                companyName_TextBox,
-                companyInformations,
-                AssingToObjectFields,
-                string.Format("Nimellä '{0}' löydettiin yrityksen tiedot. Haluatko ylikirjoittaa ne?", companyName_TextBox.Text),
-                string.Format("Yrityksen '{0}' tiedot tallennettu.", companyName_TextBox.Text),
-                "Companies");
-
-            if (added)
-            {
-                AddNewCompanies();
-            }
+            controller.AddInformation(string.Format("Yrityksen {0} tiedot lisätty.", info.Name), AddToDatabase, info);
         }
         private void deleteCompanyInformation_Button_Click(object sender, RoutedEventArgs e)
         {
-            informationHandler.OnDelete("yrityksen", "Companies", ResetFields);
+            controller.DeleteInformation(string.Format("Haluatko varmasti poistaa yrityksen {0} tiedot?", CompanyWindowViewModel.SelectedItem.Name), RemoveFromDatabase);
         }
-        private void clearFields_Button_Click(object sender, RoutedEventArgs e)
+        private void resetFields_Button_Click(object sender, RoutedEventArgs e)
         {
-            informationHandler.OnClear(ResetFields);
+            controller.ResetFields();
         }
         private void companyName_TextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             saveCompanyInformation_Button.IsEnabled = companyName_TextBox.Text.Length > 0;
+        }
+        private void companies_ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            deleteCompanyInformation_Button.IsEnabled = companies_ComboBox.SelectedIndex != -1;
         }
         #endregion
     }

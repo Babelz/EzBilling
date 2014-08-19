@@ -12,79 +12,70 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.ComponentModel;
-using EzBilling.Database;
-using EzBilling.Database.Objects;
 
 namespace EzBilling
 {
     public partial class MainWindow : Window
     {
         #region Vars
-        private readonly ClientInformationWindow clientInfoWindow;
-        private readonly CompanyInformationWindow companyInfoWindow;
-
-        private readonly XmlDatabaseConnection database;
+        private readonly ClientInformationWindow clientInformationWindow;
+        private readonly CompanyInformationWindow companyInformationWindow;
         #endregion
 
         public MainWindow()
         {
             InitializeComponent();
 
-            database = new XmlDatabaseConnection(string.Format(@"{0}\db.xml", AppDomain.CurrentDomain.BaseDirectory));
-            database.OpenConnection();
+            clientInformationWindow = new ClientInformationWindow();
+            companyInformationWindow = new CompanyInformationWindow();
 
-            clientInfoWindow = new ClientInformationWindow(database);
-            companyInfoWindow = new CompanyInformationWindow(database);
-
-            clientInfoWindow.Closing += new CancelEventHandler(clientInfoWindow_Closing);
-            companyInfoWindow.Closing += new CancelEventHandler(companyInfoWindow_Closing);
+            clientInformationWindow.Closing += new CancelEventHandler(window_Closing);
+            companyInformationWindow.Closing += new CancelEventHandler(window_Closing);
         }
 
-        #region Child window event handlers
-        private void companyInfoWindow_Closing(object sender, CancelEventArgs e)
+        #region Event handlers
+        /// <summary>
+        /// Close all child windows.
+        /// </summary>
+        private void Window_Closing(object sender, CancelEventArgs e)
         {
-            if (!IsVisible)
-            {
-                return;
-            }
-
-            e.Cancel = true;
-            companyInfoWindow.Hide();
-        }
-        private void clientInfoWindow_Closing(object sender, CancelEventArgs e)
-        {
-            if (!IsVisible)
-            {
-                return;
-            }
-
-            e.Cancel = true;
-            clientInfoWindow.Hide();
+            companyInformationWindow.Close();
+            clientInformationWindow.Close();
         }
         #endregion
 
-        #region Window event handlers
-        private void Window_Closed(object sender, EventArgs e)
+        #region Child window event handlers
+        /// <summary>
+        /// Prevent child window from closing if main window has not exited.
+        /// </summary>
+        private void window_Closing(object sender, CancelEventArgs e)
         {
-            clientInfoWindow.Close();
-            companyInfoWindow.Close();
+            Window window = sender as Window;
+
+            if (IsActive)
+            {
+                return;
+            }
+
+            e.Cancel = true;
+            window.Hide();
         }
         #endregion
 
         #region Manage menu event handlers
         private void editCompanyInfos_MenuItem_Click(object sender, RoutedEventArgs e)
         {
-            companyInfoWindow.Show();
-            companyInfoWindow.Topmost = true;
-            companyInfoWindow.Focus();
-            companyInfoWindow.Activate();
+            companyInformationWindow.Show();
+            companyInformationWindow.Topmost = true;
+            companyInformationWindow.Focus();
+            companyInformationWindow.Activate();
         }
         private void editClientInfos_MenuItem_Click(object sender, RoutedEventArgs e)
         {
-            clientInfoWindow.Show();
-            clientInfoWindow.Topmost = true;
-            clientInfoWindow.Focus();
-            clientInfoWindow.Activate();
+            clientInformationWindow.Show();
+            clientInformationWindow.Topmost = true;
+            clientInformationWindow.Focus();
+            clientInformationWindow.Activate();
         }
         #endregion
     }

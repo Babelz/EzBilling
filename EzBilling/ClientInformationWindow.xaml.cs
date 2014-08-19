@@ -10,10 +10,10 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using EzBilling.Database;
-using EzBilling.Database.Objects;
 using System.Xml.Linq;
-using EzBilling.Database.Serialization;
+using EzBilling.DatabaseObjects;
+using EzBilling.Components;
+using System.Collections.ObjectModel;
 
 namespace EzBilling
 {
@@ -22,112 +22,103 @@ namespace EzBilling
     /// </summary>
     public partial class ClientInformationWindow : Window
     {
-        #region Vars
-        private readonly XmlDatabaseConnection database;
-        private readonly DatabaseObjectSerializer serializer;
-        private readonly InformationWindowHandler informationHandler;
-
-        private List<ClientInformation> clientInformations;
+        #region Contants
+        // Dict keys.
+        private const string NAME = "Name";
+        private const string STREET = "Street";
+        private const string CITY = "City";
+        private const string POSTALCODE = "PostalCode";
         #endregion
 
-        public ClientInformationWindow(XmlDatabaseConnection database)
+        #region Vars
+        private readonly InformationWindowController<ClientInformation> controller;
+        #endregion
+
+        #region Properties
+        public InformationWindowViewModel<ClientInformation> ClientWindowViewModel
         {
+            get;
+            private set;
+        }
+        #endregion
+
+        public ClientInformationWindow()
+        {
+            ClientWindowViewModel = new InformationWindowViewModel<ClientInformation>();
+            ClientWindowViewModel.Items = new ObservableCollection<ClientInformation>();
+
             InitializeComponent();
 
-            this.database = database;
+            DataContext = this;
 
-            serializer = new DatabaseObjectSerializer();
-            clientInformations = new List<ClientInformation>();
-            informationHandler = new InformationWindowHandler(this, database, serializer, clients_ComboBox);
-        }
-
-        private void ResetFields()
-        {
-            clientName_TextBox.Clear();
-            clientStreet_TextBox.Clear();
-            clientCity_TextBox.Clear();
-            clientPostalCode_TextBox.Clear();
-
-            clients_ComboBox.SelectedIndex = -1;
-        }
-        private void AssingToObjectFields(ClientInformation clientInformation)
-        {
-            clientInformation.Name = clientName_TextBox.Text;
-            clientInformation.Street = clientStreet_TextBox.Text;
-            clientInformation.City = clientCity_TextBox.Text;
-            clientInformation.PostalCode = clientPostalCode_TextBox.Text;
-        }
-        private void AssingToFields(ClientInformation clientInformation)
-        {
-            clientName_TextBox.Text = clientInformation.Name;
-            clientStreet_TextBox.Text = clientInformation.Street;
-            clientCity_TextBox.Text = clientInformation.City;
-            clientPostalCode_TextBox.Text = clientInformation.PostalCode;
-        }
-        private void AddNewClients()
-        {
-            ResetFields();
-
-            clientInformations = serializer.Deserialize<ClientInformation>(database.FindItemRoot("Clients").Elements().ToList());
-
-            for (int i = 0; i < clientInformations.Count; i++)
+            controller = new InformationWindowController<ClientInformation>(ClientWindowViewModel, clients_ComboBox, 
+                new TextBox[] 
             {
-                if (clients_ComboBox.Items.Contains(clientInformations[i].Name))
-                {
-                    continue;
-                }
+                clientName_TextBox,
+                clientStreet_TextBox,
+                clientCity_TextBox,
+                clientPostalCode_TextBox
+            });
 
-                clients_ComboBox.Items.Add(clientInformations[i].Name);
-            }
+            // TODO: load client informations from database.
         }
 
+        private Dictionary<string, string> GetFieldInformations()
+        {
+            return new Dictionary<string, string>()
+            {
+                { NAME,  clientName_TextBox.Text},
+                { STREET,  clientStreet_TextBox.Text },
+                { CITY,  clientCity_TextBox.Text },
+                { POSTALCODE,  clientPostalCode_TextBox.Text }
+            };
+        }
+        private ClientInformation BuildClientInformation()
+        {
+            Dictionary<string, string> valuePairs = GetFieldInformations();
+
+            ClientInformation clientInformation = new ClientInformation()
+            {
+                Name = valuePairs[NAME],
+                Street = valuePairs[STREET],
+                City = valuePairs[CITY],
+                PostalCode = valuePairs[POSTALCODE]
+            };
+
+            return clientInformation;
+        }
+        private void RemoveFromDatabase(ClientInformation clientInformation)
+        {
+        }
+        private void AddToDatabase(ClientInformation clientInformation)
+        {
+        }
+        private void LoadInformationsFromDatabase()
+        {
+        }
 
         #region Event handlers
-        private void Window_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        private void saveClientInformation_Button_Click(object sender, RoutedEventArgs e)
         {
-            if (IsVisible)
-            {
-                AddNewClients();
-            }
-        }
-        private void clearFields_Button_Click(object sender, RoutedEventArgs e)
-        {
-            informationHandler.OnClear(ResetFields);
+            ClientInformation info = BuildClientInformation();
+
+            controller.AddInformation(string.Format("Asiakkaan {0} tiedot lisätyy.", info.Name), AddToDatabase, info);
         }
         private void deleteClientInformation_Button_Click(object sender, RoutedEventArgs e)
         {
-            informationHandler.OnDelete("asiakkaan", "Clients", ResetFields);
+            controller.DeleteInformation(string.Format("Halutko varmasti poistaa asiakkaan {0} tiedot?", ClientWindowViewModel.SelectedItem.Name), RemoveFromDatabase);
         }
-        private void saveClientInformation_Button_Click(object sender, RoutedEventArgs e)
+        private void resetFields_Button_Click(object sender, RoutedEventArgs e)
         {
-            ClientInformation clientInformation = clientInformations.FirstOrDefault(i => i.Name == (string)clients_ComboBox.SelectedItem);
-            
-            bool added = informationHandler.OnSave<ClientInformation>(
-                clientInformation, 
-                clientName_TextBox, 
-                clientInformations, 
-                AssingToObjectFields,
-                string.Format("Nimellä '{0}' löydettiin asiakkaan tiedot. Haluatko ylikirjoittaa ne?", clientName_TextBox.Text),
-                string.Format("Asiakkaan '{0}' tiedot tallennettu.", clientName_TextBox.Text),
-                "Clients");
-
-            if (added)
-            {
-                AddNewClients();
-            }
-        }
-        private void clients_ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            ClientInformation clientInformation = clientInformations.FirstOrDefault(i => i.Name == (string)clients_ComboBox.SelectedItem);
-
-            informationHandler.OnSelectedItemChanged<ClientInformation>(
-                deleteClientInformation_Button,
-                clientInformation,
-                AssingToFields);
+            controller.ResetFields();
         }
         private void clientName_TextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             saveClientInformation_Button.IsEnabled = clientName_TextBox.Text.Length > 0;
+        }
+        private void clients_ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            deleteClientInformation_Button.IsEnabled = clients_ComboBox.SelectedIndex != -1;
         }
         #endregion
     }
