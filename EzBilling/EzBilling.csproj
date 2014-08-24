@@ -90,11 +90,13 @@
       <DependentUpon>CompanyInformationWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\InformationWindowViewModel.cs" />
+    <Compile Include="DatabaseObjects\BillInformation.cs" />
     <Compile Include="DatabaseObjects\ClientInformation.cs" />
     <Compile Include="DatabaseObjects\CompanyInformation.cs" />
     <Compile Include="DatabaseObjects\DatabaseHelper.cs" />
     <Compile Include="DatabaseObjects\DatabaseObject.cs" />
     <Compile Include="DatabaseObjects\EzBillingDatabase.cs" />
+    <Compile Include="DatabaseObjects\ProductInformation.cs" />
     <Compile Include="DatabaseObjects\UserInformation.cs" />
     <Compile Include="InformationWindowController.cs" />
     <Compile Include="MainWindow.xaml.cs">

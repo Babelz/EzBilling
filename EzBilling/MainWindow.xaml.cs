@@ -20,6 +20,7 @@ namespace EzBilling
     public partial class MainWindow : Window
     {
         #region Vars
+        private readonly EzBillingDatabase database;
         private readonly ClientInformationWindow clientInformationWindow;
         private readonly CompanyInformationWindow companyInformationWindow;
         #endregion
@@ -28,28 +29,30 @@ namespace EzBilling
         public ObservableCollection<ClientInformation> ClientInformations
         {
             get;
-            private set;
+            set;
         }
         public ClientInformation SelectedClientInformation
         {
             get;
-            private set;
+            set;
         }
         public ObservableCollection<CompanyInformation> CompanyInformations
         {
             get;
-            private set;
+            set;
         }
         public CompanyInformation SelectedCompanyInformation
         {
             get;
-            private set;
+            set;
         }
         #endregion
 
         public MainWindow()
         {
             InitializeComponent();
+
+            database = new EzBillingDatabase();
 
             ClientInformations = new ObservableCollection<ClientInformation>();
             CompanyInformations = new ObservableCollection<CompanyInformation>();
@@ -61,6 +64,40 @@ namespace EzBilling
             companyInformationWindow.Closing += new CancelEventHandler(window_Closing);
 
             DataContext = this;
+
+            LoadItemsFromDatabase();
+
+            products_ListView.Items.Add(
+                new ProductInformation()
+                {
+                    ID = "100",
+                    Name = "Kortsuja",
+                    Quantity = "5,0",
+                    Unit = "kpl",
+                    UnitPrice = "2,5",
+                    VATPercent = "24,0"
+                });
+        }
+
+        private void LoadItemsFromDatabase()
+        {
+            SelectedClientInformation = null;
+            SelectedCompanyInformation = null;
+
+            ClientInformations.Clear();
+            CompanyInformations.Clear();
+
+            List<CompanyInformation> companyInfos = database.GetCompanyInformations();
+            List<ClientInformation> clientInfos = database.GetClientInformations();
+
+            for (int i = 0; i < companyInfos.Count; i++)
+            {
+                CompanyInformations.Add(companyInfos[i]);
+            }
+            for (int i = 0; i < clientInfos.Count; i++)
+            {
+                ClientInformations.Add(clientInfos[i]);
+            }
         }
 
         #region Event handlers
@@ -132,5 +169,30 @@ namespace EzBilling
             clientInformationWindow.Activate();
         }
         #endregion
+
+        private void products_ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
+
+        private void clearFields_Button_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void removeSelectedProduct_Button_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void addProduct_Button_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void productName_TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
     }
 }

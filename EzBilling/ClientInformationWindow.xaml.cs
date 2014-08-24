@@ -63,10 +63,9 @@ namespace EzBilling
                 clientPostalCode_TextBox
             });
 
-            // TODO: load client informations from database.
             database = new EzBillingDatabase();
+
             LoadInformationsFromDatabase();
-       
         }
 
         private Dictionary<string, string> GetFieldInformations()
@@ -101,8 +100,9 @@ namespace EzBilling
         }
         private void LoadInformationsFromDatabase()
         {
-            var list = database.GetClientInformations();
+            List<ClientInformation> list = database.GetClientInformations();
             ClientWindowViewModel.Items.Clear();
+
             for (int i = 0; i < list.Count; i++)
             {
                 ClientWindowViewModel.Items.Add(list[i]);
