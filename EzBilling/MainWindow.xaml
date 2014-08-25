@@ -15,21 +15,16 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         
+        <!-- Top menu section -->
         <Menu Grid.ColumnSpan="3">
             <!-- Billing menu  -->
             <MenuItem Header="Laskutus" Margin="3">
-                <MenuItem Header="Lataa lasku" Name="loadBill_MenuItem" Click="loadBill_MenuItem_Click"/>
-                <MenuItem Header="Uusi lasku" Name="newBill_MenuItem" Click="newBill_MenuItem_Click"/>
-                <MenuItem Header="Tallenna lasku" Name="saveBill_MenuItem" Click="saveBill_MenuItem_Click"/>
-                <Separator/>
-                <MenuItem Header="Tulosta lasku" Name="printBill_MenuItem" Click="printBill_MenuItem_Click"/>
-                <Separator/>
                 <MenuItem Header="Sulje ohjelma" Name="closeProgram_MenuItem" Click="closeProgram_MenuItem_Click"/>
             </MenuItem>
             
             <!-- Manage menu -->
             <MenuItem Header="Hallinnoi" Margin="3">
-                <MenuItem Header="Yrityksien tietoja" Name="editCompanyInfos_MenuItem" Click="editCompanyInfos_MenuItem_Click"/>
+                <MenuItem Header="Yritysten tietoja" Name="editCompanyInfos_MenuItem" Click="editCompanyInfos_MenuItem_Click"/>
                 <MenuItem Header="Asiakkaitten tietoja" Name="editClientInfos_MenuItem" Click="editClientInfos_MenuItem_Click"/>
             </MenuItem>
             
@@ -38,7 +33,8 @@
                 <MenuItem Header="Tietoja ohjelmasta" Name="about_MenuItem" Click="about_MenuItem_Click"/>
             </MenuItem>
         </Menu>
-
+        
+        <!-- Company information section -->
         <Grid Grid.Row="1" Grid.Column="0" Background="LightGray" Margin="5">
             <Grid.RowDefinitions>
                 <RowDefinition Height="45"/>
@@ -118,46 +114,97 @@
                    DataContext="{Binding ElementName=companyName_ComboBox, Path=SelectedItem}"/>
         </Grid>
         
-        <Grid Grid.Row="1" Grid.Column="1" Background="LightGray" Margin="0, 5, 5, 5">
+        <!-- Client and bill wrapper grid -->
+        <Grid Grid.Row="1" Grid.Column="1" Margin="0, 5, 5, 5" >
             <Grid.RowDefinitions>
-                <RowDefinition Height="45"/>
-                <RowDefinition Height="25"/>
-                <RowDefinition Height="25"/>
-                <RowDefinition Height="25"/>
-                <RowDefinition Height="25"/>
+                <RowDefinition Height="150"/>
+                <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
+            
+            <!-- Client information section -->
+            <Grid Grid.Row="0" Grid.Column="1" Background="LightGray" Height="145" VerticalAlignment="Top">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="45"/>
+                    <RowDefinition Height="25"/>
+                    <RowDefinition Height="25"/>
+                    <RowDefinition Height="25"/>
+                    <RowDefinition Height="25"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
 
-            <Viewbox Grid.Row="0"  HorizontalAlignment="Left" Grid.ColumnSpan="2">
-                <Label Content="Asiakkaan tiedot" Name="clientInformationHeader_Label" FontWeight="Bold"/>
-            </Viewbox>
-            
-            <!-- Client information headers -->
-            <Label Content="Nimi: " VerticalAlignment="Bottom" HorizontalAlignment="Right" Grid.Row="1"/>
-            <Label Content="Katu: " VerticalAlignment="Bottom" HorizontalAlignment="Right" Grid.Row="2"/>
-            <Label Content="Kaupunki: " VerticalAlignment="Bottom" HorizontalAlignment="Right" Grid.Row="3"/>
-            <Label Content="Postinumero: " VerticalAlignment="Bottom" HorizontalAlignment="Right" Grid.Row="4"/>
-            
-            <!-- Client information fields -->
-            <ComboBox Name="clientName_ComboBox" Grid.Row="1" Grid.Column="1" Margin="2"
+                <Viewbox Grid.Row="0"  HorizontalAlignment="Left" Grid.ColumnSpan="2">
+                    <Label Content="Asiakkaan tiedot" Name="clientInformationHeader_Label" FontWeight="Bold"/>
+                </Viewbox>
+
+                <!-- Client information headers -->
+                <Label Content="Nimi: " VerticalAlignment="Bottom" HorizontalAlignment="Right" Grid.Row="1"/>
+                <Label Content="Katu: " VerticalAlignment="Bottom" HorizontalAlignment="Right" Grid.Row="2"/>
+                <Label Content="Kaupunki: " VerticalAlignment="Bottom" HorizontalAlignment="Right" Grid.Row="3"/>
+                <Label Content="Postinumero: " VerticalAlignment="Bottom" HorizontalAlignment="Right" Grid.Row="4"/>
+
+                <!-- Client information fields -->
+                <ComboBox Name="clientName_ComboBox" Grid.Row="1" Grid.Column="1" Margin="2"
                       ItemsSource="{Binding ClientInformations}"
                       DisplayMemberPath="Name"
                       SelectedValue="{Binding SelectedClientInformation}"
                       SelectedValuePath="{Binding SelectedClientInformation.Name}"/>
-            <Label Name="clientStreet_Label" VerticalAlignment="Bottom" HorizontalAlignment="Left" Grid.Row="2" Grid.Column="1"
+                <Label Name="clientStreet_Label" VerticalAlignment="Bottom" HorizontalAlignment="Left" Grid.Row="2" Grid.Column="1"
                    Content="{Binding Path=Street}"
                    DataContext="{Binding ElementName=clientName_ComboBox, Path=SelectedItem}"/>
-            <Label Name="clientCity_Label" VerticalAlignment="Bottom" HorizontalAlignment="Left" Grid.Row="3" Grid.Column="1"
+                <Label Name="clientCity_Label" VerticalAlignment="Bottom" HorizontalAlignment="Left" Grid.Row="3" Grid.Column="1"
                    Content="{Binding Path=City}"
-                   DataContext="{Binding ElementName=clientName_ComboBox, Path=SelectedItem}"/>   
-            <Label Name="clientPostalCode_Label" VerticalAlignment="Bottom" HorizontalAlignment="Left" Grid.Row="4" Grid.Column="1"
+                   DataContext="{Binding ElementName=clientName_ComboBox, Path=SelectedItem}"/>
+                <Label Name="clientPostalCode_Label" VerticalAlignment="Bottom" HorizontalAlignment="Left" Grid.Row="4" Grid.Column="1"
                    Content="{Binding Path=PostalCode}"
                    DataContext="{Binding ElementName=clientName_ComboBox, Path=SelectedItem}"/>
+            </Grid>
+            
+            <!-- Billing utils section -->
+            <Grid Grid.Row="1" Grid.Column="1" Background="LightGray">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="45"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="35"/>
+                    <RowDefinition Height="35"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Viewbox Grid.Row="0" HorizontalAlignment="Left" Grid.ColumnSpan="3">
+                    <Label Name="billsHeader_Label" Content="Laskut" FontWeight="Bold"/>
+                </Viewbox>
+                <ListView Grid.Row="1" Grid.Column="0" Name="bills_ComboBox" Grid.ColumnSpan="3" Margin="2"
+                          SelectedItem="{Binding SelectedBill}"
+                          ItemsSource="{Binding BillInformations}"
+                          SelectionChanged="bills_ComboBox_SelectionChanged">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn DisplayMemberBinding="{Binding Name}">
+                                <GridViewColumn.Header>
+                                    <Label Content="Nimi"/>
+                                </GridViewColumn.Header>
+                            </GridViewColumn>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+
+                <Button IsEnabled="False" Name="saveBill_Button" Content="Tallenna lasku" Grid.Row="2" Grid.ColumnSpan="3" Margin="2, 5, 2, 2"
+                        Click="saveBill_Button_Click"/>
+                <Button Name="newBill_Button" Content="Uusi lasku" Grid.Row="3" Grid.Column="0" Margin="2, 5, 2, 2"
+                        Click="newBill_Button_Click"/>
+                <Button IsEnabled="False" Name="deleteBill_Button" Content="Poista lasku" Grid.Row="3" Grid.Column="1" Margin="2, 5, 2, 2"
+                        Click="deleteBill_Button_Click"/>
+                <Button IsEnabled="False" Name="printBill_Button" Content="Tulosta" Grid.Row="3" Grid.Column="2" Margin="2, 5, 2, 2"
+                        Click="printBill_Button_Click"/>
+            </Grid>
         </Grid>
         
+        <!-- Billing section section -->
         <Grid Grid.Row="1" Grid.Column="2" Margin="0, 5, 5, 5" Background="LightGray">
             <Grid.RowDefinitions>
                 <RowDefinition Height="45"/>
@@ -220,14 +267,26 @@
                 <Label Content="Alv %: " Grid.Row="4" VerticalAlignment="Bottom" HorizontalAlignment="Right"/>
                 
                 <!-- Product info input fields -->
-                <TextBox Name="productName_TextBox" Grid.Row="0" Grid.Column="1" Margin="2" TextAlignment="Left" TextChanged="productName_TextBox_TextChanged"/>
-                <TextBox Name="productQuantity_TextBox" Grid.Row="1" Grid.Column="1" Margin="2" TextAlignment="Left"/>
-                <TextBox Name="productUnit_TextBox" Grid.Row="2" Grid.Column="1" Margin="2" TextAlignment="Left"/>
-                <TextBox Name="productUnitPrice_TextBox" Grid.Row="3" Grid.Column="1" Margin="2" TextAlignment="Left"/>
-                <TextBox Name="productVATPercent_TextBox" Grid.Row="4" Grid.Column="1" Margin="2" TextAlignment="Left"/>
+                <TextBox Name="productName_TextBox" Grid.Row="0" Grid.Column="1" Margin="2" TextAlignment="Left" TextChanged="productName_TextBox_TextChanged"
+                         Text="{Binding Path=Name}"
+                         DataContext="{Binding SelectedProduct}"/>
+                <TextBox Name="productQuantity_TextBox" Grid.Row="1" Grid.Column="1" Margin="2" TextAlignment="Left"
+                         Text="{Binding Path=Quantity}"
+                         DataContext="{Binding SelectedProduct}"/>
+                <TextBox Name="productUnit_TextBox" Grid.Row="2" Grid.Column="1" Margin="2" TextAlignment="Left"
+                         Text="{Binding Path=Unit}"
+                         DataContext="{Binding SelectedProduct}"/>
+                <TextBox Name="productUnitPrice_TextBox" Grid.Row="3" Grid.Column="1" Margin="2" TextAlignment="Left"
+                         Text="{Binding Path=UnitPrice}"
+                         DataContext="{Binding SelectedProduct}"/>
+                <TextBox Name="productVATPercent_TextBox" Grid.Row="4" Grid.Column="1" Margin="2" TextAlignment="Left"
+                         Text="{Binding Path=VATPercent}"
+                         DataContext="{Binding SelectedProduct}"/> 
             </Grid>
             
-            <ListView Grid.Row="4" Name="products_ListView" Margin="2" SelectionChanged="products_ListView_SelectionChanged">
+            <ListView Grid.Row="4" Name="products_ListView" Margin="2" SelectionChanged="products_ListView_SelectionChanged"
+                      ItemsSource="{Binding SelectedBill.Products}"
+                      SelectedItem="{Binding SelectedProduct}">
                 <ListView.View>
                     <GridView>
                         <GridViewColumn DisplayMemberBinding="{Binding Name}">
@@ -278,12 +337,10 @@
                 </Grid.ColumnDefinitions>
                 
                 <Label Content="Alv:" VerticalAlignment="Center" HorizontalAlignment="Right"/>
-                <Label Name="totalTax_Label" Content="100" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Column="1"/>
+                <Label Name="totalTax_Label" Content="{Binding SelectedBill.VATAmount}" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Column="1"/>
 
                 <Label Content="Yhteensä:" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="2"/>
-                <Label Name="totalPrice_Label" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Column="3"
-                       Content="{Binding Name}"
-                       DataContext="{Binding Path=CurrentBill}"/>
+                <Label Name="totalPrice_Label" Content="{Binding SelectedBill.Total}" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Column="3"/>
             </Grid>
             
             <Grid Grid.Row="6">
@@ -293,8 +350,8 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <Button Name="addProduct_Button" IsEnabled="False" Content="Lisää/Muokkaa" Grid.Column="0" Margin="2, 5, 2, 2" Grid.Row="1" Click="addProduct_Button_Click"/>
-                <Button Name="removeSelectedProduct_Button" IsEnabled="False" Content="Poista" Grid.Column="1" Margin="2, 5, 2, 2" Grid.Row="1" Click="removeSelectedProduct_Button_Click"/>
+                <Button Name="addProduct_Button" IsEnabled="False" Content="Lisää tuote" Grid.Column="0" Margin="2, 5, 2, 2" Grid.Row="1" Click="addProduct_Button_Click"/>
+                <Button Name="removeSelectedProduct_Button" IsEnabled="False" Content="Poista tuote" Grid.Column="1" Margin="2, 5, 2, 2" Grid.Row="1" Click="removeSelectedProduct_Button_Click"/>
                 <Button Name="clearFields_Button" Content="Tyhjennä kentät" Grid.Column="2" Margin="2, 5, 2, 2" Grid.Row="1" Click="clearFields_Button_Click"/>
             </Grid>
         </Grid>

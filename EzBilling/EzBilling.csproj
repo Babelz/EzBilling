@@ -36,6 +36,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Office.Interop.Excel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
@@ -64,6 +67,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <None Include="Files\cellcoords.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <Content Include="Lib\System.Data.SQLite.dll" />
     <Content Include="Lib\System.Data.SQLite.Linq.dll" />
     <Content Include="TODO.txt" />
@@ -98,6 +104,10 @@
     <Compile Include="DatabaseObjects\EzBillingDatabase.cs" />
     <Compile Include="DatabaseObjects\ProductInformation.cs" />
     <Compile Include="DatabaseObjects\UserInformation.cs" />
+    <Compile Include="Excel\BillWriter.cs" />
+    <Compile Include="Excel\CellCoordinate.cs" />
+    <Compile Include="Excel\CellCoordinateReader.cs" />
+    <Compile Include="Excel\ExcelConnection.cs" />
     <Compile Include="InformationWindowController.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -124,6 +134,9 @@
     </EmbeddedResource>
     <None Include="db">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Files\TempBill.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

@@ -10,6 +10,7 @@ namespace EzBilling.DatabaseObjects
     public sealed class BillInformation : DatabaseObject
     {
         #region Vars
+        private string name;
         private string reference;
         private string dueDate;
         private string additionalInformation;
@@ -17,6 +18,17 @@ namespace EzBilling.DatabaseObjects
         #endregion
 
         #region Properties
+        public string Name
+        {
+            get
+            {
+                return name;
+            }
+            set
+            {
+                name = value;
+            }
+        }
         public string Reference
         {
             get
@@ -89,6 +101,13 @@ namespace EzBilling.DatabaseObjects
                 return total.ToString("0.00");
             }
         }
+        public string TotalVATless
+        {
+            get
+            {
+                return (decimal.Parse(Total) - decimal.Parse(VATAmount)).ToString("0.00");
+            }
+        }
         #endregion
 
         public BillInformation()
@@ -98,7 +117,12 @@ namespace EzBilling.DatabaseObjects
 
         public override void Fill(DataRow info)
         {
-            throw new NotImplementedException();
+            name = info["name"].ToString();
+            reference = info["name"].ToString();
+            dueDate = info["name"].ToString();
+            additionalInformation = info["name"].ToString();
+            
+            // TODO: how to load product informations?
         }
     }
 }
