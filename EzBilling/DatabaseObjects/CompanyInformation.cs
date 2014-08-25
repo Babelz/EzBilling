@@ -97,8 +97,7 @@ namespace EzBilling.DatabaseObjects
             Name = row["name"].ToString();
             City = row["city"].ToString();
             PostalCode = row["postal_code"].ToString();
-            // TODO Add address to SQL
-            //c.Street = row["address"].ToString();
+            Street = row["address"].ToString();
 
             BankName = row["bank_name"].ToString();
             BankBIC = row["bank_bic"].ToString();

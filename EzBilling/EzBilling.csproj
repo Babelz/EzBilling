@@ -66,6 +66,9 @@
     </ApplicationDefinition>
     <Content Include="Lib\System.Data.SQLite.dll" />
     <Content Include="Lib\System.Data.SQLite.Linq.dll" />
+    <Content Include="sql\EzBilling.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="TODO.txt" />
     <Page Include="ClientInformationWindow.xaml">
       <SubType>Designer</SubType>
@@ -90,11 +93,15 @@
       <DependentUpon>CompanyInformationWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\InformationWindowViewModel.cs" />
+    <Compile Include="DatabaseObjects\BillInformation.cs" />
     <Compile Include="DatabaseObjects\ClientInformation.cs" />
     <Compile Include="DatabaseObjects\CompanyInformation.cs" />
     <Compile Include="DatabaseObjects\DatabaseHelper.cs" />
     <Compile Include="DatabaseObjects\DatabaseObject.cs" />
     <Compile Include="DatabaseObjects\EzBillingDatabase.cs" />
+    <Compile Include="DatabaseObjects\ProductInformation.cs" />
+    <Compile Include="DatabaseObjects\SQliteColumn.cs" />
+    <Compile Include="DatabaseObjects\SQliteTable.cs" />
     <Compile Include="DatabaseObjects\UserInformation.cs" />
     <Compile Include="InformationWindowController.cs" />
     <Compile Include="MainWindow.xaml.cs">
@@ -120,9 +127,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="db">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

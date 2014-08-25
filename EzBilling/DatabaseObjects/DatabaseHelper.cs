@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -23,7 +24,6 @@ namespace EzBilling.DatabaseObjects
         {
             connection = new SQLiteConnection(string.Format("Data Source={0};Version=3;", path));
             command = new SQLiteCommand(connection);
-            
         }
         /// <summary>
         /// Opens database connection
@@ -39,6 +39,16 @@ namespace EzBilling.DatabaseObjects
         public void Close()
         {
             connection.Close();
+        }
+
+        public int ExecuteFile(string file)
+        {
+            string contents = File.ReadAllText(file);
+            command.CommandText = contents;
+            connection.Open();
+            int rows = command.ExecuteNonQuery();
+            connection.Close();
+            return rows;
         }
 
         #region Query
@@ -277,6 +287,11 @@ namespace EzBilling.DatabaseObjects
             }
             sb.Remove(sb.Length - 5, 5);
             return sb.ToString();
+        }
+
+        public void Create(SQliteTable table)
+        {
+            
         }
         #endregion
     }
