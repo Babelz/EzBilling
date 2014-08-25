@@ -73,8 +73,8 @@ namespace EzBilling
             });
 
             database = new EzBillingDatabase();
+
             LoadInformationsFromDatabase();
-            // TODO: load company informations from database.
         }
 
         private Dictionary<string, string> GetFieldInformations()
@@ -123,13 +123,13 @@ namespace EzBilling
         }
         private void LoadInformationsFromDatabase()
         {
-            var list = database.GetCompanyInformations();
+            List<CompanyInformation> list = database.GetCompanyInformations();
             CompanyWindowViewModel.Items.Clear();
-            foreach (var companyInformation in list)
+
+            for (int i = 0; i < list.Count; i++)
             {
-                CompanyWindowViewModel.Items.Add(companyInformation);
+                CompanyWindowViewModel.Items.Add(list[i]);
             }
-            
         }
 
         #region Event handlers

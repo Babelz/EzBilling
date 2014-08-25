@@ -289,10 +289,6 @@ namespace EzBilling.DatabaseObjects
             return sb.ToString();
         }
 
-        public void Create(SQliteTable table)
-        {
-            
-        }
         #endregion
     }
 }
