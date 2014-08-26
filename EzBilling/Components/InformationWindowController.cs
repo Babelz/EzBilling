@@ -6,7 +6,7 @@ using EzBilling.Components;
 using System.Windows.Controls;
 using System.Windows;
 
-namespace EzBilling
+namespace EzBilling.Components
 {
     public sealed class InformationWindowController<T> where T : class
     {

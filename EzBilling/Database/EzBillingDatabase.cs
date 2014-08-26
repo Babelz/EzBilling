@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace EzBilling.DatabaseObjects
+namespace EzBilling.Database
 {
     public sealed class EzBillingDatabase
     {

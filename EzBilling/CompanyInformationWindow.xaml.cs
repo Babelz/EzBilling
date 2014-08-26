@@ -12,7 +12,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using EzBilling.Components;
 using System.Collections.ObjectModel;
-using EzBilling.DatabaseObjects;
+using EzBilling.Database;
 
 namespace EzBilling
 {

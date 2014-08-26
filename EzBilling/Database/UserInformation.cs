@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace EzBilling.DatabaseObjects
+namespace EzBilling.Database
 {
     public abstract class UserInformation : DatabaseObject
     {

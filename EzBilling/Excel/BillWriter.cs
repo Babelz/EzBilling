@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using EzBilling.DatabaseObjects;
+using EzBilling.Database;
 using Microsoft.Office.Interop.Excel;
 using System.IO;
 using System.Security.AccessControl;
@@ -12,30 +12,19 @@ namespace EzBilling.Excel
 {
     public sealed class BillWriter
     {
-        #region Static vars
-        private static readonly string billsPath;
-        #endregion
-
-        #region Constants
-        private const int MAX_PRODUCTS = 20;
-        #endregion
-
         #region Vars
+        private readonly FileManager fileManager;
         private readonly List<DatabaseObject> billObjects;
+        private readonly string billsDirectory;
+        private readonly string billName;
         #endregion
 
-        static BillWriter()
+        public BillWriter(CompanyInformation company, ClientInformation client, BillInformation bill, string billsDirectory)
         {
-            billsPath = AppDomain.CurrentDomain.BaseDirectory + @"Bills\";
+            fileManager = new FileManager();
 
-            if (!Directory.Exists(billsPath))
-            {
-                Directory.CreateDirectory(billsPath);
-            }
-        }
-
-        public BillWriter(CompanyInformation company, ClientInformation client, BillInformation bill)
-        {
+            // Get objects associated with the bill and
+            // insert them to same list so writing to the excel file is easier.
             billObjects = new List<DatabaseObject>()
             {
                 company, client, bill
@@ -47,21 +36,10 @@ namespace EzBilling.Excel
             }
 
             billObjects = billObjects.OrderBy(o => o.GetType().Name).ToList();
-        }
+            
+            billName = bill.Name;
 
-        private void CreateDirectory(string dir)
-        {
-            if (!Directory.Exists(dir))
-            {
-                Directory.CreateDirectory(dir, new DirectorySecurity(dir, AccessControlSections.All));
-            }
-        }
-        private void CreateFile(string fullPath)
-        {
-            if (!File.Exists(fullPath))
-            {
-                File.Create(fullPath).Close();
-            }
+            this.billsDirectory = billsDirectory;
         }
 
         private void WriteToCell(Worksheet worksheet, string value, int row, string column)
@@ -108,15 +86,14 @@ namespace EzBilling.Excel
                 }
             }
         }
-
-        public void SaveAsPDF(Worksheet worksheet, string clientName)
+        public void SaveBillAsPDF(Worksheet worksheet)
         {
-            string dir =  string.Format("{0}{1}\\", billsPath, clientName);
-            string file = string.Format("{1} - {2}.pdf", billsPath, clientName, DateTime.Now.Date.ToString("MM/dd/yyyy"));
-            string fullPath = dir + file;
+            string directory =  string.Format("{0}{1}\\", billsDirectory, billName);
+            string filename = string.Format("{0}{1}.pdf", billsDirectory, billName);
+            string fullPath = directory + filename;
 
-            CreateDirectory(dir);
-            CreateFile(fullPath);
+            fileManager.CreateDirectoryIfDoesNotExist(directory);
+            fileManager.CreateFileIfDoesNotExist(fullPath);
 
             worksheet.ExportAsFixedFormat(XlFixedFormatType.xlTypePDF, fullPath);
         }

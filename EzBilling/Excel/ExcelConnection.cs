@@ -18,6 +18,16 @@ namespace EzBilling.Excel
         private Workbook workbook;
         #endregion
 
+        #region Properties
+        public bool Connected
+        {
+            get
+            {
+                return application != null;
+            }
+        }
+        #endregion
+
         static ExcelConnection()
         {
             tempWorkBookPath = AppDomain.CurrentDomain.BaseDirectory + @"\Files\TempBill.xlsx";
@@ -34,11 +44,11 @@ namespace EzBilling.Excel
             return officeType != null;
         }
 
-        public void Connect()
+        public void Open()
         {
             if (ExcelInstalled())
             {
-                application = new Application();    
+                application = new Application();
             }
         }
         public Worksheet GetWorksheet()
@@ -53,6 +63,11 @@ namespace EzBilling.Excel
             }
 
             return workbook.ActiveSheet;
+        }
+        public void ResetWorksheet()
+        {
+            Close();
+            Open();
         }
         public void Close()
         {

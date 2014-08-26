@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Data;
 
-namespace EzBilling.DatabaseObjects
+namespace EzBilling.Database
 {
     public sealed class BillInformation : DatabaseObject
     {
         #region Vars
+        private string company;
+        private string client;
         private string name;
         private string reference;
         private string dueDate;
@@ -15,19 +17,28 @@ namespace EzBilling.DatabaseObjects
         #endregion
 
         #region Properties
-
-        public int Company
+        public string Company
         {
-            get;
-            private set;
+            get
+            {
+                return company;
+            }
+            set
+            {
+                company = value;
+            }
         }
-
-        public int Client
+        public string Client
         {
-            get;
-            private set;
+            get
+            {
+                return client;
+            }
+            set
+            {
+                client = value;
+            }
         }
-
         public string Name
         {
             get
@@ -125,19 +136,23 @@ namespace EzBilling.DatabaseObjects
             products = new List<ProductInformation>();
         }
 
+        public bool IsEmpty()
+        {
+            return string.IsNullOrEmpty(name) ||
+                   string.IsNullOrEmpty(reference) ||
+                   string.IsNullOrEmpty(dueDate) ||
+                   string.IsNullOrEmpty(additionalInformation) ||
+                   products.Count > 0;
+        }
         public override void Fill(DataRow info)
         {
             ID = info["bill_id"].ToString();
-            Company = Convert.ToInt32(info["company"].ToString());
-            Client = Convert.ToInt32(info["client"].ToString());
+            Company = info["company"].ToString();
+            Client = info["client"].ToString();
             Reference = info["reference"].ToString();
             DueDate = info["due_date"].ToString();
             AdditionalInformation = info["comments"].ToString();
 
         }
-
-
-
-        
     }
 }

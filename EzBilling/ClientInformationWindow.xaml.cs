@@ -11,7 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Xml.Linq;
-using EzBilling.DatabaseObjects;
+using EzBilling.Database;
 using EzBilling.Components;
 using System.Collections.ObjectModel;
 

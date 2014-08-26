@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 
 
-namespace EzBilling.DatabaseObjects
+namespace EzBilling.Database
 {
     public sealed class ProductInformation : DatabaseObject
     {

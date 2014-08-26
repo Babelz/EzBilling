@@ -150,7 +150,8 @@
                       ItemsSource="{Binding ClientInformations}"
                       DisplayMemberPath="Name"
                       SelectedValue="{Binding SelectedClientInformation}"
-                      SelectedValuePath="{Binding SelectedClientInformation.Name}"/>
+                      SelectedValuePath="{Binding SelectedClientInformation.Name}"
+                      SelectionChanged="clientName_ComboBox_SelectionChanged_1"/>
                 <Label Name="clientStreet_Label" VerticalAlignment="Bottom" HorizontalAlignment="Left" Grid.Row="2" Grid.Column="1"
                    Content="{Binding Path=Street}"
                    DataContext="{Binding ElementName=clientName_ComboBox, Path=SelectedItem}"/>
@@ -178,10 +179,10 @@
                 <Viewbox Grid.Row="0" HorizontalAlignment="Left" Grid.ColumnSpan="3">
                     <Label Name="billsHeader_Label" Content="Laskut" FontWeight="Bold"/>
                 </Viewbox>
-                <ListView Grid.Row="1" Grid.Column="0" Name="bills_ComboBox" Grid.ColumnSpan="3" Margin="2"
-                          SelectedItem="{Binding SelectedBill}"
+                <ListView Grid.Row="1" Grid.Column="0" Name="bills_ListView" Grid.ColumnSpan="3" Margin="2"
+                          SelectedItem="{Binding SelectedBillInformation}"
                           ItemsSource="{Binding BillInformations}"
-                          SelectionChanged="bills_ComboBox_SelectionChanged">
+                          SelectionChanged="bills_ListView_SelectionChanged">
                     <ListView.View>
                         <GridView>
                             <GridViewColumn DisplayMemberBinding="{Binding Name}">
@@ -195,7 +196,7 @@
 
                 <Button IsEnabled="False" Name="saveBill_Button" Content="Tallenna lasku" Grid.Row="2" Grid.ColumnSpan="3" Margin="2, 5, 2, 2"
                         Click="saveBill_Button_Click"/>
-                <Button Name="newBill_Button" Content="Uusi lasku" Grid.Row="3" Grid.Column="0" Margin="2, 5, 2, 2"
+                <Button Name="newBill_Button" Content="Uusi lasku" IsEnabled="False" Grid.Row="3" Grid.Column="0" Margin="2, 5, 2, 2"
                         Click="newBill_Button_Click"/>
                 <Button IsEnabled="False" Name="deleteBill_Button" Content="Poista lasku" Grid.Row="3" Grid.Column="1" Margin="2, 5, 2, 2"
                         Click="deleteBill_Button_Click"/>
@@ -261,32 +262,35 @@
 
                 <!-- Product info header labels -->
                 <Label Content="* Kuvaus: " Grid.Row="0" VerticalAlignment="Bottom" HorizontalAlignment="Right"/>
-                <Label Content="Määrä: " Grid.Row="1" VerticalAlignment="Bottom" HorizontalAlignment="Right"/>
+                <Label Content="* Määrä: " Grid.Row="1" VerticalAlignment="Bottom" HorizontalAlignment="Right"/>
                 <Label Content="Yksikkö: " Grid.Row="2" VerticalAlignment="Bottom" HorizontalAlignment="Right"/>
-                <Label Content="á hinta: " Grid.Row="3" VerticalAlignment="Bottom" HorizontalAlignment="Right"/>
-                <Label Content="Alv %: " Grid.Row="4" VerticalAlignment="Bottom" HorizontalAlignment="Right"/>
+                <Label Content="* á hinta: " Grid.Row="3" VerticalAlignment="Bottom" HorizontalAlignment="Right"/>
+                <Label Content="* Alv %: " Grid.Row="4" VerticalAlignment="Bottom" HorizontalAlignment="Right"/>
                 
                 <!-- Product info input fields -->
-                <TextBox Name="productName_TextBox" Grid.Row="0" Grid.Column="1" Margin="2" TextAlignment="Left" TextChanged="productName_TextBox_TextChanged"
-                         Text="{Binding Path=Name}"
-                         DataContext="{Binding SelectedProduct}"/>
+                <TextBox Name="productName_TextBox" Grid.Row="0" Grid.Column="1" Margin="2" TextAlignment="Left"
+                         Text="{Binding Path=SelectedItem.Name}"
+                         DataContext="{Binding ProductViewModel}"/>
                 <TextBox Name="productQuantity_TextBox" Grid.Row="1" Grid.Column="1" Margin="2" TextAlignment="Left"
-                         Text="{Binding Path=Quantity}"
-                         DataContext="{Binding SelectedProduct}"/>
+                         Text="{Binding Path=SelectedItem.Quantity}"
+                         DataContext="{Binding ProductViewModel}"
+                         TextChanged="productInformation_TextBox_TextChanged"/>
                 <TextBox Name="productUnit_TextBox" Grid.Row="2" Grid.Column="1" Margin="2" TextAlignment="Left"
-                         Text="{Binding Path=Unit}"
-                         DataContext="{Binding SelectedProduct}"/>
+                         Text="{Binding Path=SelectedItem.Unit}"
+                         DataContext="{Binding ProductViewModel}"/>
                 <TextBox Name="productUnitPrice_TextBox" Grid.Row="3" Grid.Column="1" Margin="2" TextAlignment="Left"
-                         Text="{Binding Path=UnitPrice}"
-                         DataContext="{Binding SelectedProduct}"/>
+                         Text="{Binding Path=SelectedItem.UnitPrice}"
+                         DataContext="{Binding ProductViewModel}"
+                         TextChanged="productInformation_TextBox_TextChanged"/>
                 <TextBox Name="productVATPercent_TextBox" Grid.Row="4" Grid.Column="1" Margin="2" TextAlignment="Left"
-                         Text="{Binding Path=VATPercent}"
-                         DataContext="{Binding SelectedProduct}"/> 
+                         Text="{Binding Path=SelectedItem.VATPercent}"
+                         DataContext="{Binding ProductViewModel}"
+                         TextChanged="productInformation_TextBox_TextChanged"/>
             </Grid>
             
             <ListView Grid.Row="4" Name="products_ListView" Margin="2" SelectionChanged="products_ListView_SelectionChanged"
-                      ItemsSource="{Binding SelectedBill.Products}"
-                      SelectedItem="{Binding SelectedProduct}">
+                      ItemsSource="{Binding SelectedBillInformation.Products}"
+                      SelectedItem="{Binding ProductViewModel.SelectedItem}">
                 <ListView.View>
                     <GridView>
                         <GridViewColumn DisplayMemberBinding="{Binding Name}">
@@ -352,7 +356,7 @@
 
                 <Button Name="addProduct_Button" IsEnabled="False" Content="Lisää tuote" Grid.Column="0" Margin="2, 5, 2, 2" Grid.Row="1" Click="addProduct_Button_Click"/>
                 <Button Name="removeSelectedProduct_Button" IsEnabled="False" Content="Poista tuote" Grid.Column="1" Margin="2, 5, 2, 2" Grid.Row="1" Click="removeSelectedProduct_Button_Click"/>
-                <Button Name="clearFields_Button" Content="Tyhjennä kentät" Grid.Column="2" Margin="2, 5, 2, 2" Grid.Row="1" Click="clearFields_Button_Click"/>
+                <Button Name="clearFields_Button" Content="Uusi tuote" Grid.Column="2" Margin="2, 5, 2, 2" Grid.Row="1" Click="clearFields_Button_Click"/>
             </Grid>
         </Grid>
     </Grid>

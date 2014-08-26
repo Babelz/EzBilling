@@ -89,6 +89,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="BillManager.cs" />
     <Compile Include="ClientInformationWindow.xaml.cs">
       <DependentUpon>ClientInformationWindow.xaml</DependentUpon>
     </Compile>
@@ -96,19 +97,20 @@
       <DependentUpon>CompanyInformationWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\InformationWindowViewModel.cs" />
-    <Compile Include="DatabaseObjects\BillInformation.cs" />
-    <Compile Include="DatabaseObjects\ClientInformation.cs" />
-    <Compile Include="DatabaseObjects\CompanyInformation.cs" />
-    <Compile Include="DatabaseObjects\DatabaseHelper.cs" />
-    <Compile Include="DatabaseObjects\DatabaseObject.cs" />
-    <Compile Include="DatabaseObjects\EzBillingDatabase.cs" />
-    <Compile Include="DatabaseObjects\ProductInformation.cs" />
-    <Compile Include="DatabaseObjects\UserInformation.cs" />
+    <Compile Include="Database\BillInformation.cs" />
+    <Compile Include="Database\ClientInformation.cs" />
+    <Compile Include="Database\CompanyInformation.cs" />
+    <Compile Include="Database\DatabaseHelper.cs" />
+    <Compile Include="Database\DatabaseObject.cs" />
+    <Compile Include="Database\EzBillingDatabase.cs" />
+    <Compile Include="Database\ProductInformation.cs" />
+    <Compile Include="Database\UserInformation.cs" />
     <Compile Include="Excel\BillWriter.cs" />
     <Compile Include="Excel\CellCoordinate.cs" />
     <Compile Include="Excel\CellCoordinateReader.cs" />
     <Compile Include="Excel\ExcelConnection.cs" />
-    <Compile Include="InformationWindowController.cs" />
+    <Compile Include="Components\InformationWindowController.cs" />
+    <Compile Include="FileManager.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -169,6 +171,9 @@
       <Isolated>False</Isolated>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Bills\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
