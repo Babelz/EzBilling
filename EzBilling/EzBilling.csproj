@@ -64,7 +64,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Fakes Include="Fakes\Microsoft.Office.Interop.Excel.fakes" />
     <None Include="Files\cellcoords.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
