@@ -78,9 +78,9 @@
 
             <!-- Company information data fields -->
             <ComboBox Name="companyName_ComboBox" Grid.Row="1" Grid.Column="1" Margin="2"
-                      ItemsSource="{Binding CompanyInformations}"
+                      ItemsSource="{Binding CompanyViewModel.Items}"
                       DisplayMemberPath="Name"
-                      SelectedValue="{Binding SelectedCompanyInformation}"
+                      SelectedValue="{Binding CompanyViewModel.SelectedItem}"
                       SelectedValuePath="{Binding SelectedCompanyInformation.Name}"/>
             <Label Name="companyStreet_Label" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Bottom"
                    Content="{Binding Path=Street}"
@@ -115,7 +115,7 @@
         </Grid>
         
         <!-- Client and bill wrapper grid -->
-        <Grid Grid.Row="1" Grid.Column="1" Margin="0, 5, 5, 5" >
+        <Grid Grid.Row="1" Grid.Column="1" Margin="0, 5, 5, 5" IsEnabled="False" Name="clientAndBillWrapper_Grid">
             <Grid.RowDefinitions>
                 <RowDefinition Height="150"/>
                 <RowDefinition Height="*"/>
@@ -180,8 +180,8 @@
                     <Label Name="billsHeader_Label" Content="Laskut" FontWeight="Bold"/>
                 </Viewbox>
                 <ListView Grid.Row="1" Grid.Column="0" Name="bills_ListView" Grid.ColumnSpan="3" Margin="2"
-                          SelectedItem="{Binding SelectedBillInformation}"
-                          ItemsSource="{Binding BillInformations}"
+                          SelectedItem="{Binding BillViewModel.SelectedItem}"
+                          ItemsSource="{Binding BillViewModel.Items}"
                           SelectionChanged="bills_ListView_SelectionChanged">
                     <ListView.View>
                         <GridView>
@@ -206,7 +206,7 @@
         </Grid>
         
         <!-- Billing section section -->
-        <Grid Grid.Row="1" Grid.Column="2" Margin="0, 5, 5, 5" Background="LightGray">
+        <Grid Grid.Row="1" Grid.Column="2" Margin="0, 5, 5, 5" Background="LightGray" IsEnabled="False" Name="productSection_Grid">
             <Grid.RowDefinitions>
                 <RowDefinition Height="45"/>
                 <RowDefinition Height="72"/>
@@ -268,28 +268,28 @@
                 <Label Content="* Alv %: " Grid.Row="4" VerticalAlignment="Bottom" HorizontalAlignment="Right"/>
                 
                 <!-- Product info input fields -->
-                <TextBox Name="productName_TextBox" Grid.Row="0" Grid.Column="1" Margin="2" TextAlignment="Left"
+                <TextBox Name="productName_TextBox" Grid.Row="0" Grid.Column="1" Margin="2" TextAlignment="Left" IsEnabled="False"
                          Text="{Binding Path=SelectedItem.Name}"
                          DataContext="{Binding ProductViewModel}"/>
-                <TextBox Name="productQuantity_TextBox" Grid.Row="1" Grid.Column="1" Margin="2" TextAlignment="Left"
+                <TextBox Name="productQuantity_TextBox" Grid.Row="1" Grid.Column="1" Margin="2" TextAlignment="Left" IsEnabled="False"
                          Text="{Binding Path=SelectedItem.Quantity}"
                          DataContext="{Binding ProductViewModel}"
                          TextChanged="productInformation_TextBox_TextChanged"/>
-                <TextBox Name="productUnit_TextBox" Grid.Row="2" Grid.Column="1" Margin="2" TextAlignment="Left"
+                <TextBox Name="productUnit_TextBox" Grid.Row="2" Grid.Column="1" Margin="2" TextAlignment="Left" IsEnabled="False"
                          Text="{Binding Path=SelectedItem.Unit}"
                          DataContext="{Binding ProductViewModel}"/>
-                <TextBox Name="productUnitPrice_TextBox" Grid.Row="3" Grid.Column="1" Margin="2" TextAlignment="Left"
+                <TextBox Name="productUnitPrice_TextBox" Grid.Row="3" Grid.Column="1" Margin="2" TextAlignment="Left" IsEnabled="False"
                          Text="{Binding Path=SelectedItem.UnitPrice}"
                          DataContext="{Binding ProductViewModel}"
                          TextChanged="productInformation_TextBox_TextChanged"/>
-                <TextBox Name="productVATPercent_TextBox" Grid.Row="4" Grid.Column="1" Margin="2" TextAlignment="Left"
+                <TextBox Name="productVATPercent_TextBox" Grid.Row="4" Grid.Column="1" Margin="2" TextAlignment="Left" IsEnabled="False"
                          Text="{Binding Path=SelectedItem.VATPercent}"
                          DataContext="{Binding ProductViewModel}"
                          TextChanged="productInformation_TextBox_TextChanged"/>
             </Grid>
             
             <ListView Grid.Row="4" Name="products_ListView" Margin="2" SelectionChanged="products_ListView_SelectionChanged"
-                      ItemsSource="{Binding SelectedBillInformation.Products}"
+                      ItemsSource="{Binding BillViewModel.SelectedItem.Products}"
                       SelectedItem="{Binding ProductViewModel.SelectedItem}">
                 <ListView.View>
                     <GridView>

@@ -27,6 +27,7 @@ namespace EzBilling
     public partial class MainWindow : Window
     {
         #region Vars
+        private readonly TextBox[] productSectionInputFields;
         private readonly BillManager billManager;
         private readonly ExcelConnection excelConnection;
         private readonly EzBillingDatabase database;
@@ -35,37 +36,22 @@ namespace EzBilling
         #endregion
 
         #region Properties
-        public ObservableCollection<ClientInformation> ClientInformations
+        public InformationWindowViewModel<ClientInformation> ClientViewModel
         {
             get;
-            set;
-        }
-        public ClientInformation SelectedClientInformation
-        {
-            get;
-            set;
-        }
-        
-        public ObservableCollection<CompanyInformation> CompanyInformations
-        {
-            get;
-            set;
-        }
-        public CompanyInformation SelectedCompanyInformation
-        {
-            get;
-            set;
+            private set;
         }
 
-        public ObservableCollection<BillInformation> BillInformations
+        public InformationWindowViewModel<CompanyInformation> CompanyViewModel
         {
             get;
-            set;
+            private set;
         }
-        public BillInformation SelectedBillInformation
+
+        public InformationWindowViewModel<BillInformation> BillViewModel
         {
             get;
-            set;
+            private set;
         }
 
         public InformationWindowViewModel<ProductInformation> ProductViewModel
@@ -81,10 +67,6 @@ namespace EzBilling
 
             database = new EzBillingDatabase();
 
-            ClientInformations = new ObservableCollection<ClientInformation>();
-            CompanyInformations = new ObservableCollection<CompanyInformation>();
-            BillInformations = new ObservableCollection<BillInformation>();
-
             clientInformationWindow = new ClientInformationWindow();
             companyInformationWindow = new CompanyInformationWindow();
 
@@ -92,30 +74,82 @@ namespace EzBilling
             companyInformationWindow.Closing += new CancelEventHandler(window_Closing);
 
             excelConnection = new ExcelConnection();
+
+            ClientViewModel = new InformationWindowViewModel<ClientInformation>();
+            ClientViewModel.Items = new ObservableCollection<ClientInformation>();
+
+            CompanyViewModel = new InformationWindowViewModel<CompanyInformation>();
+            CompanyViewModel.Items = new ObservableCollection<CompanyInformation>();
+            CompanyViewModel.PropertyChanged += CompanyViewModel_PropertyChanged;
+
+            ProductViewModel = new InformationWindowViewModel<ProductInformation>();
+            ProductViewModel.Items = new ObservableCollection<ProductInformation>();
+            ProductViewModel.PropertyChanged += ProductViewModel_PropertyChanged;
+
+            BillViewModel = new InformationWindowViewModel<BillInformation>();
+            BillViewModel.Items = new ObservableCollection<BillInformation>();
+            BillViewModel.PropertyChanged += BillViewModel_PropertyChanged;
+
+            billManager = new BillManager();
+
+            productSectionInputFields = new TextBox[] 
+            {
+                productName_TextBox,
+                productQuantity_TextBox,
+                productUnit_TextBox,
+                productUnitPrice_TextBox,
+                productVATPercent_TextBox
+            };
+
             DataContext = this;
 
             LoadItemsFromDatabase();
             excelConnection.Open();
 
-            SelectedBillInformation = new BillInformation();
+            clientInformationWindow.ClientWindowViewModel.Items = ClientViewModel.Items;
+            companyInformationWindow.CompanyWindowViewModel.Items = CompanyViewModel.Items;
+        }
 
-            ProductViewModel = new InformationWindowViewModel<ProductInformation>();
-            ProductViewModel.SelectedItem = new ProductInformation();
+        private void CompanyViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "SelectedItem")
+            {
+                clientAndBillWrapper_Grid.IsEnabled = CompanyViewModel.SelectedItem != null;
+            }
+        }
 
-            billManager = new BillManager();
+        private void ProductViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "SelectedItem")
+            {
+                bool enableFields = ProductViewModel.SelectedItem != null;
+
+                for (int i = 0; i < productSectionInputFields.Length; i++)
+                {
+                    productSectionInputFields[i].IsEnabled = enableFields;
+                }
+            }
+        }
+
+        private void BillViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "SelectedItem")
+            {
+                productSection_Grid.IsEnabled = BillViewModel.SelectedItem != null;
+            }
         }
 
         private void LoadItemsFromDatabase()
         {
             ClientInformations.Clear();
-            CompanyInformations.Clear();
+            CompanyViewModel.Items.Clear();
 
             List<CompanyInformation> companyInfos = database.GetCompanyInformations();
             List<ClientInformation> clientInfos = database.GetClientInformations();
 
             for (int i = 0; i < companyInfos.Count; i++)
             {
-                CompanyInformations.Add(companyInfos[i]);
+                CompanyViewModel.Items.Add(companyInfos[i]);
             }
             for (int i = 0; i < clientInfos.Count; i++)
             {
@@ -130,7 +164,7 @@ namespace EzBilling
         {
             bool result = false;
 
-            if (SelectedCompanyInformation == null)
+            if (CompanyViewModel.SelectedItem == null)
             {
                 MessageBox.Show("Laskua ei voida luoda koska laskuttavaa yritystä ei ole valittu.", "EzBilling", MessageBoxButton.OK);
             }
@@ -225,13 +259,13 @@ namespace EzBilling
         }
         private void removeSelectedProduct_Button_Click(object sender, RoutedEventArgs e)
         {
-            SelectedBillInformation.Products.Remove(products_ListView.SelectedItem as ProductInformation);
+            BillViewModel.SelectedItem.Products.Remove(products_ListView.SelectedItem as ProductInformation);
 
             products_ListView.Items.Refresh();
         }
         private void addProduct_Button_Click(object sender, RoutedEventArgs e)
         {
-            SelectedBillInformation.Products.Add(ProductViewModel.SelectedItem);
+            BillViewModel.SelectedItem.Products.Add(ProductViewModel.SelectedItem);
 
             products_ListView.Items.Refresh();
         }
@@ -252,9 +286,17 @@ namespace EzBilling
 
             if (result == MessageBoxResult.Yes)
             {
-                string path = string.Format("Bills\\{0}\\{1}.pdf", SelectedClientInformation.Name, SelectedBillInformation.Name);
+                string path = string.Format("Bills\\{0}\\{1}.pdf", SelectedClientInformation.Name, BillViewModel.SelectedItem.Name);
 
-                File.Delete(path);
+                if (File.Exists(path))
+                {
+                    File.Delete(path);
+
+                    // TODO: remove from db.
+                }
+
+                BillViewModel.Items.Remove(BillViewModel.SelectedItem);
+                BillViewModel.SelectedItem = null;
 
                 MessageBox.Show("Lasku poistettu.", "EzBilling", MessageBoxButton.OK);
             }
@@ -263,35 +305,25 @@ namespace EzBilling
         {
             Dispatcher.BeginInvoke(new Action(() =>
             {
-                if (!SelectedBillInformation.IsEmpty())
-                {
-                    MessageBoxResult result = MessageBox.Show("Kaikki tallentamattomat tiedot häviävät, haluatko jatkaa?", "EzBilling", MessageBoxButton.YesNo);
+                BillViewModel.SelectedItem = MakeNew();
 
-                    if (result == MessageBoxResult.Yes)
-                    {
-                        SelectedBillInformation = MakeNew();
-                    }
-                }
-                else
+                if (!BillViewModel.Items.Contains(BillViewModel.SelectedItem))
                 {
-                    SelectedBillInformation = MakeNew();
-                }
-
-                if (!BillInformations.Contains(SelectedBillInformation))
-                {
-                    BillInformations.Add(SelectedBillInformation);
+                    BillViewModel.Items.Add(BillViewModel.SelectedItem);
 
                     bills_ListView.Items.Refresh();
                 }
+
+                products_ListView.Items.Refresh();
             }));
         }
         private void saveBill_Button_Click(object sender, RoutedEventArgs e)
         {
             if (ValidateBill())
             {
-                BillInformations.Add(SelectedBillInformation);
+                BillViewModel.Items.Add(BillViewModel.SelectedItem);
 
-                billManager.SaveBillAsPDF(excelConnection.GetWorksheet(), SelectedCompanyInformation, SelectedClientInformation, SelectedBillInformation);
+                billManager.SaveBillAsPDF(excelConnection.GetWorksheet(), CompanyViewModel.SelectedItem, SelectedClientInformation, BillViewModel.SelectedItem);
                 excelConnection.ResetWorksheet();
 
                 // TODO: write to database.
@@ -302,7 +334,7 @@ namespace EzBilling
         private void bills_ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             saveBill_Button.IsEnabled = bills_ListView.SelectedIndex != -1;
-            deleteBill_Button.IsEnabled = bills_ListView.SelectedIndex != -1 && !string.IsNullOrEmpty(SelectedBillInformation.Name);
+            deleteBill_Button.IsEnabled = bills_ListView.SelectedIndex != -1 && !string.IsNullOrEmpty(BillViewModel.SelectedItem.Name);
             printBill_Button.IsEnabled = bills_ListView.SelectedIndex != -1;
         }
         private void productInformation_TextBox_TextChanged(object sender, TextChangedEventArgs e)
