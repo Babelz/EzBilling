@@ -36,6 +36,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EntityFramework">
+      <HintPath>..\packages\EntityFramework.6.1.1\lib\net40\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\packages\EntityFramework.6.1.1\lib\net40\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
@@ -64,6 +70,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <None Include="App.config" />
+    <None Include="db.sqlite">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Files\cellcoords.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -96,14 +106,6 @@
       <DependentUpon>CompanyInformationWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\InformationWindowViewModel.cs" />
-    <Compile Include="DatabaseObjects\BillInformation.cs" />
-    <Compile Include="DatabaseObjects\ClientInformation.cs" />
-    <Compile Include="DatabaseObjects\CompanyInformation.cs" />
-    <Compile Include="DatabaseObjects\DatabaseHelper.cs" />
-    <Compile Include="DatabaseObjects\DatabaseObject.cs" />
-    <Compile Include="DatabaseObjects\EzBillingDatabase.cs" />
-    <Compile Include="DatabaseObjects\ProductInformation.cs" />
-    <Compile Include="DatabaseObjects\UserInformation.cs" />
     <Compile Include="Excel\BillWriter.cs" />
     <Compile Include="Excel\CellCoordinate.cs" />
     <Compile Include="Excel\CellCoordinateReader.cs" />
@@ -115,6 +117,16 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\Address.cs" />
+    <Compile Include="Models\Bill.cs" />
+    <Compile Include="Models\Client.cs" />
+    <Compile Include="Models\Company.cs" />
+    <Compile Include="Models\EzBillingModel.cs" />
+    <Compile Include="Models\Mapping\BillMap.cs" />
+    <Compile Include="Models\Mapping\ClientMap.cs" />
+    <Compile Include="Models\Mapping\CompanyMap.cs" />
+    <Compile Include="Models\Mapping\ProductMap.cs" />
+    <Compile Include="Models\Product.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -135,6 +147,7 @@
     <None Include="Files\TempBill.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
