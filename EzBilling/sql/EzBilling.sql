@@ -1,32 +1,37 @@
+CREATE TABLE IF NOT EXISTS Address (
+	address_id integer PRIMARY KEY,
+	city 		varchar(100) NOT NULL,
+	postal_code char(5) NOT NULL,
+	address     varchar(100) NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS Company (
 	company_id 	varchar(15) PRIMARY KEY,
 	name		varchar(255) NOT NULL,
-	city		varchar(100) NOT NULL,
-	postal_code	char(5),
-	address		varchar(100),
+	address_id 	integer NOT NULL,
 	-- bank
-	bank_name	varchar(50),
-	bank_bic	varchar(30),
-	bank_account varchar(100),
+	bank_name	varchar(50) NOT NULL,
+	bank_bic	varchar(30) NOT NULL,
+	bank_account varchar(100) NOT NULL,
 	-- info
-	biller_name varchar(100),
-	email 		varchar(100),
-	phone_number	varchar(20)
+	biller_name varchar(100) NOT NULL,
+	email 		varchar(100) NOT NULL,
+	phone_number	varchar(20) NOT NULL,
+	FOREIGN KEY (address_id) REFERENCES Address(address_id)
 );
 
 CREATE TABLE IF NOT EXISTS Client (
 	client_id 	integer PRIMARY KEY,
-	name		varchar(100), -- can be company so we aren't using first/surnames here
-	city		varchar(100),
-	postal_code char(5),
-	address		varchar(100)
+	name		varchar(100) NOT NULL, -- can be company so we aren't using first/surnames here
+	address_id 	integer NOT NULL,
+	FOREIGN KEY (address_id) REFERENCES Address(address_id)
 
 );
 
 CREATE TABLE IF NOT EXISTS Bill (
 	bill_id		integer PRIMARY KEY,
-	company     varchar(15),
-	client      integer,
+	company     varchar(15) NOT NULL, 
+	client      integer NOT NULL, -- every bill has client
 	reference   varchar(100),
 	due_date    integer, -- milliseconds
 	comments 	text,
@@ -37,10 +42,10 @@ CREATE TABLE IF NOT EXISTS Bill (
 CREATE TABLE IF NOT EXISTS Product (
 	product_id	integer PRIMARY KEY,
 	name		varchar(100) NOT NULL,
-	quantity 	decimal,
-	unit_price	integer, -- cents
-	unit		varchar(30),
-	vat			decimal
+	quantity 	decimal NOT NULL,
+	unit_price	integer NOT NULL, -- cents
+	unit		varchar(30) NOT NULL,
+	vat			decimal NOT NULL
 ) ;
 
 CREATE TABLE IF NOT EXISTS BillItems (
@@ -51,15 +56,36 @@ CREATE TABLE IF NOT EXISTS BillItems (
 	FOREIGN KEY (bill_id) REFERENCES Bill(bill_id)
 ) WITHOUT ROWID;
 
+-- address
+INSERT INTO Address(address_id, city, postal_code, address)
+VALUES(
+	NULL,
+	'Kajaani',
+	'87300',
+	'Joku osote'
+);
 
+INSERT INTO Address(address_id, city, postal_code, address)
+VALUES(
+	NULL,
+	'Oulu',
+	'12345',
+	'Nussintakuja 69'
+);
+
+INSERT INTO Address(address_id, city, postal_code, address)
+VALUES(
+	NULL,
+	'Kasarmi',
+	'44444',
+	'Aamujen lato 347'
+);
 -- company
-INSERT INTO Company(company_id, name, city, postal_code, address, bank_name, bank_bic, bank_account, biller_name, email, phone_number)
+INSERT INTO Company(company_id, name, address_id, bank_name, bank_bic, bank_account, biller_name, email, phone_number)
 VALUES (
 	'Y-TUNNUS',
 	'Jeesuksen Naulakauppa',
-	'Kajaani',
-	'87300',
-	'Joku osote',
+	1,
 	'Nordea',
 	'NDEAFIHH',
 	'1234-123-123-12323',
@@ -71,22 +97,18 @@ VALUES (
 
 -- client
 
-INSERT INTO Client(client_id, name, city, postal_code, address)
+INSERT INTO Client(client_id, name, address_id)
 VALUES (
 	NULL,
 	'Ville Pätsi',
-	'Oulu',
-	'12345',
-	'Nussintakuja 69'
+	2
 );
 
-INSERT INTO Client(client_id, name, city, postal_code, address)
+INSERT INTO Client(client_id, name, address_id)
 VALUES (
 	NULL,
 	'Erkki LOS',
-	'Kasarmi',
-	'44444',
-	'Aamujen lato 347'
+	3
 );
 
 -- bill
