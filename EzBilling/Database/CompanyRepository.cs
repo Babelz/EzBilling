@@ -18,7 +18,7 @@ namespace EzBilling.Database
         public override void InsertOrUpdate(Company entity)
         {
             // if there isn't company
-            if (!Find(c => c.CompanyId == entity.CompanyId).Any())
+            if (!Find(c => c.CompanyID == entity.CompanyID).Any())
             {
                 Model.Set<Company>().Add(entity);
             }

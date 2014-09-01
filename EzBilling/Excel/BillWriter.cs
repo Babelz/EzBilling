@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using EzBilling.DatabaseObjects;
+using EzBilling.Database;
+using EzBilling.Models;
 using Microsoft.Office.Interop.Excel;
 using System.IO;
 using System.Security.AccessControl;
@@ -12,31 +13,20 @@ namespace EzBilling.Excel
 {
     public sealed class BillWriter
     {
-        #region Static vars
-        private static readonly string billsPath;
-        #endregion
-
-        #region Constants
-        private const int MAX_PRODUCTS = 20;
-        #endregion
-
         #region Vars
-        private readonly List<DatabaseObject> billObjects;
+        private readonly FileManager fileManager;
+        private readonly List<object> billObjects;
+        private readonly string billsDirectory;
+        private readonly string billName;
         #endregion
 
-        static BillWriter()
+        public BillWriter(Company company, Client client, Bill bill, string billsDirectory)
         {
-            billsPath = AppDomain.CurrentDomain.BaseDirectory + @"Bills\";
+            fileManager = new FileManager();
 
-            if (!Directory.Exists(billsPath))
-            {
-                Directory.CreateDirectory(billsPath);
-            }
-        }
-
-        public BillWriter(CompanyInformation company, ClientInformation client, BillInformation bill)
-        {
-            billObjects = new List<DatabaseObject>()
+            // Get objects associated with the bill and
+            // insert them to same list so writing to the excel file is easier.
+            billObjects = new List<object>()
             {
                 company, client, bill
             };
@@ -47,21 +37,10 @@ namespace EzBilling.Excel
             }
 
             billObjects = billObjects.OrderBy(o => o.GetType().Name).ToList();
-        }
+            
+            billName = bill.Name;
 
-        private void CreateDirectory(string dir)
-        {
-            if (!Directory.Exists(dir))
-            {
-                Directory.CreateDirectory(dir, new DirectorySecurity(dir, AccessControlSections.All));
-            }
-        }
-        private void CreateFile(string fullPath)
-        {
-            if (!File.Exists(fullPath))
-            {
-                File.Create(fullPath).Close();
-            }
+            this.billsDirectory = billsDirectory;
         }
 
         private void WriteToCell(Worksheet worksheet, string value, int row, string column)
@@ -84,7 +63,7 @@ namespace EzBilling.Excel
 
                 for (int j = start; j < coordinates.Count; j++)
                 {
-                    int row = type == typeof(ProductInformation) ? productIndex : coordinates[j].Row;
+                    int row = type == typeof(Product) ? productIndex : coordinates[j].Row;
 
                     // Get the property that matches cell coordinates name property.
                     PropertyInfo property = type.GetProperty(coordinates[j].Name);
@@ -102,21 +81,20 @@ namespace EzBilling.Excel
                     break;
                 }
 
-                if (type == typeof(ProductInformation))
+                if (type == typeof(Product))
                 {
                     productIndex++;
                 }
             }
         }
-
-        public void SaveAsPDF(Worksheet worksheet, string clientName)
+        public void SaveBillAsPDF(Worksheet worksheet)
         {
-            string dir =  string.Format("{0}{1}\\", billsPath, clientName);
-            string file = string.Format("{1} - {2}.pdf", billsPath, clientName, DateTime.Now.Date.ToString("MM/dd/yyyy"));
-            string fullPath = dir + file;
+            string directory =  string.Format("{0}{1}\\", billsDirectory, billName);
+            string filename = string.Format("{0}{1}.pdf", billsDirectory, billName);
+            string fullPath = directory + filename;
 
-            CreateDirectory(dir);
-            CreateFile(fullPath);
+            fileManager.CreateDirectoryIfDoesNotExist(directory);
+            fileManager.CreateFileIfDoesNotExist(fullPath);
 
             worksheet.ExportAsFixedFormat(XlFixedFormatType.xlTypePDF, fullPath);
         }

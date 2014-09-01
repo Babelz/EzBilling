@@ -8,13 +8,13 @@ namespace EzBilling.Models.Mapping
         public BillMap()
         {
             // Primary Key
-            this.HasKey(t => t.BillId);
+            this.HasKey(t => t.BillID);
 
             // Properties
-            this.Property(t => t.BillId)
+            this.Property(t => t.BillID)
                 .HasDatabaseGeneratedOption(DatabaseGeneratedOption.None);
 
-            this.Property(t => t.CompanyId)
+            this.Property(t => t.CompanyID)
                 .IsRequired()
                 .HasMaxLength(15);
 
@@ -26,9 +26,9 @@ namespace EzBilling.Models.Mapping
 
             // Table & Column Mappings
             this.ToTable("Bill");
-            this.Property(t => t.BillId).HasColumnName("bill_id");
-            this.Property(t => t.CompanyId).HasColumnName("company");
-            this.Property(t => t.ClientId).HasColumnName("client");
+            this.Property(t => t.BillID).HasColumnName("bill_id");
+            this.Property(t => t.CompanyID).HasColumnName("company");
+            this.Property(t => t.ClientID).HasColumnName("client");
             this.Property(t => t.Reference).HasColumnName("reference");
             this.Property(t => t.DueDate).HasColumnName("due_date");
             this.Property(t => t.AdditionalInformation).HasColumnName("comments");
@@ -45,10 +45,10 @@ namespace EzBilling.Models.Mapping
 
             this.HasRequired(t => t.Company)
                 .WithMany(t => t.Bills)
-                .HasForeignKey(d => d.CompanyId);
+                .HasForeignKey(d => d.CompanyID);
             this.HasRequired(t => t.Client)
                 .WithMany(t => t.Bills)
-                .HasForeignKey(d => d.ClientId);
+                .HasForeignKey(d => d.ClientID);
 
         }
     }

@@ -11,9 +11,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Xml.Linq;
-using EzBilling.DatabaseObjects;
+using EzBilling.Database;
 using EzBilling.Components;
 using System.Collections.ObjectModel;
+using EzBilling.Models;
 
 namespace EzBilling
 {
@@ -31,14 +32,14 @@ namespace EzBilling
         #endregion
 
         #region Vars
-        private readonly InformationWindowController<ClientInformation> controller;
+        private readonly InformationWindowController<Client> controller;
 
-        private readonly EzBillingDatabase database;
+        private readonly ClientRepository database;
 
         #endregion
 
         #region Properties
-        public InformationWindowViewModel<ClientInformation> ClientWindowViewModel
+        public InformationWindowViewModel<Client> ClientWindowViewModel
         {
             get;
             private set;
@@ -47,14 +48,14 @@ namespace EzBilling
 
         public ClientInformationWindow()
         {
-            ClientWindowViewModel = new InformationWindowViewModel<ClientInformation>();
-            ClientWindowViewModel.Items = new ObservableCollection<ClientInformation>();
+            ClientWindowViewModel = new InformationWindowViewModel<Client>();
+            ClientWindowViewModel.Items = new ObservableCollection<Client>();
 
             InitializeComponent();
            
             DataContext = this;
 
-            controller = new InformationWindowController<ClientInformation>(ClientWindowViewModel, clients_ComboBox, 
+            controller = new InformationWindowController<Client>(ClientWindowViewModel, clients_ComboBox, 
                 new TextBox[] 
             {
                 clientName_TextBox,
@@ -63,7 +64,7 @@ namespace EzBilling
                 clientPostalCode_TextBox
             });
 
-            database = new EzBillingDatabase();
+            database = new ClientRepository(new EzBillingModel());
 
             LoadInformationsFromDatabase();
         }
@@ -78,29 +79,29 @@ namespace EzBilling
                 { POSTALCODE,  clientPostalCode_TextBox.Text }
             };
         }
-        private ClientInformation BuildClientInformation()
+        private Client BuildClientInformation()
         {
             Dictionary<string, string> valuePairs = GetFieldInformations();
 
-            ClientInformation clientInformation = new ClientInformation()
+            Client clientInformation = new Client()
             {
-                Name = valuePairs[NAME],
-                Street = valuePairs[STREET],
-                City = valuePairs[CITY],
-                PostalCode = valuePairs[POSTALCODE]
+                Name = valuePairs[NAME]
             };
+            clientInformation.Address.Street = valuePairs[STREET];
+            clientInformation.Address.City = valuePairs[CITY];
+            clientInformation.Address.PostalCode = valuePairs[POSTALCODE];
 
             return clientInformation;
         }
-        private void RemoveFromDatabase(ClientInformation clientInformation)
+        private void RemoveFromDatabase(Client clientInformation)
         {
         }
-        private void AddToDatabase(ClientInformation clientInformation)
+        private void AddToDatabase(Client clientInformation)
         {
         }
         private void LoadInformationsFromDatabase()
         {
-            List<ClientInformation> list = database.GetClientInformations();
+            List<Client> list = database.All.ToList();
             ClientWindowViewModel.Items.Clear();
 
             for (int i = 0; i < list.Count; i++)
@@ -112,7 +113,7 @@ namespace EzBilling
         #region Event handlers
         private void saveClientInformation_Button_Click(object sender, RoutedEventArgs e)
         {
-            ClientInformation info = BuildClientInformation();
+            Client info = BuildClientInformation();
 
             controller.AddInformation(string.Format("Asiakkaan {0} tiedot lisätyy.", info.Name), AddToDatabase, info);
         }

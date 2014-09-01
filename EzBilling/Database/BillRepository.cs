@@ -15,7 +15,7 @@ namespace EzBilling.Database
 
         public override void InsertOrUpdate(Bill entity)
         {
-            if (entity.BillId == default(int))
+            if (entity.BillID == default(int))
             {
                 Model.Set<Bill>().Add(entity);
             }

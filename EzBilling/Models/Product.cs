@@ -15,7 +15,7 @@ namespace EzBilling.Models
         public decimal Quantity { get; set; }
         public long UnitPrice { get; set; }
         public string Unit { get; set; }
-        public decimal Vat { get; set; }
+        public decimal VATPercent { get; set; }
         public virtual ICollection<Bill> Bills { get; set; }
     }
 }

@@ -12,7 +12,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using EzBilling.Components;
 using System.Collections.ObjectModel;
-using EzBilling.DatabaseObjects;
+using EzBilling.Database;
+using EzBilling.Models;
 
 namespace EzBilling
 {
@@ -29,18 +30,18 @@ namespace EzBilling
         private const string BANKNAME = "BankName";
         private const string BANKBIC = "BankBIC";
         private const string BILLERNAME = "BillerName";
-        private const string PHONENUMBER = "PhoneNumber";
+        private const string PHONENUMBER = "Phone";
         private const string EMAILADDRESS = "EmailAddress";
         #endregion
 
         #region Vars
-        private readonly InformationWindowController<CompanyInformation> controller;
+        private readonly InformationWindowController<Company> controller;
 
-        private readonly EzBillingDatabase database;
+        private readonly CompanyRepository database;
         #endregion
 
         #region Properties
-        public InformationWindowViewModel<CompanyInformation> CompanyWindowViewModel
+        public InformationWindowViewModel<Company> CompanyWindowViewModel
         {
             get;
             private set;
@@ -49,14 +50,14 @@ namespace EzBilling
 
         public CompanyInformationWindow()
         {
-            CompanyWindowViewModel = new InformationWindowViewModel<CompanyInformation>();
-            CompanyWindowViewModel.Items = new ObservableCollection<CompanyInformation>();
+            CompanyWindowViewModel = new InformationWindowViewModel<Company>();
+            CompanyWindowViewModel.Items = new ObservableCollection<Company>();
 
             InitializeComponent();
 
             DataContext = this;
 
-            controller = new InformationWindowController<CompanyInformation>(CompanyWindowViewModel, companies_ComboBox,
+            controller = new InformationWindowController<Company>(CompanyWindowViewModel, companies_ComboBox,
                 new TextBox[]
             {
                 companyName_TextBox,
@@ -72,7 +73,7 @@ namespace EzBilling
                 companyEmailAddress_TextBox
             });
 
-            database = new EzBillingDatabase();
+            database = new CompanyRepository(new EzBillingModel());
 
             LoadInformationsFromDatabase();
         }
@@ -94,17 +95,14 @@ namespace EzBilling
                 { EMAILADDRESS, companyEmailAddress_TextBox.Text },
             };
         }
-        private CompanyInformation BuildCompanyInformation()
+        private Company BuildCompanyInformation()
         {
             Dictionary<string, string> valuePairs = GetFieldInformations();
 
-            CompanyInformation companyInformation = new CompanyInformation()
+            Company companyInformation = new Company()
             {
                 Name = valuePairs[NAME],
-                Street = valuePairs[STREET],
-                City = valuePairs[CITY],
-                PostalCode = valuePairs[POSTALCODE],
-                ID = valuePairs[ID],
+                CompanyID = valuePairs[ID],
                 AccountNumber = valuePairs[ACCOUNTNUMBER],
                 BankName = valuePairs[BANKNAME],
                 BankBIC = valuePairs[BANKBIC],
@@ -112,18 +110,21 @@ namespace EzBilling
                 Phone = valuePairs[PHONENUMBER],
                 Email = valuePairs[EMAILADDRESS]
             };
+            companyInformation.Address.Street = valuePairs[STREET];
+            companyInformation.Address.City = valuePairs[CITY];
+            companyInformation.Address.PostalCode = valuePairs[POSTALCODE];
 
             return companyInformation;
         }
-        private void RemoveFromDatabase(CompanyInformation companyInformation)
+        private void RemoveFromDatabase(Company companyInformation)
         {
         }
-        private void AddToDatabase(CompanyInformation companyInformation)
+        private void AddToDatabase(Company companyInformation)
         {
         }
         private void LoadInformationsFromDatabase()
         {
-            List<CompanyInformation> list = database.GetCompanyInformations();
+            List<Company> list = database.All.ToList();
             CompanyWindowViewModel.Items.Clear();
 
             for (int i = 0; i < list.Count; i++)
@@ -135,7 +136,7 @@ namespace EzBilling
         #region Event handlers
         private void saveCompanyInformation_Button_Click(object sender, RoutedEventArgs e)
         {
-            CompanyInformation info = BuildCompanyInformation();
+            Company info = BuildCompanyInformation();
 
             controller.AddInformation(string.Format("Yrityksen {0} tiedot lisätty.", info.Name), AddToDatabase, info);
         }

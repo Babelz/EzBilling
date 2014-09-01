@@ -8,10 +8,10 @@ namespace EzBilling.Models.Mapping
         public CompanyMap()
         {
             // Primary Key
-            this.HasKey(t => t.CompanyId);
+            this.HasKey(t => t.CompanyID);
 
             // Properties
-            this.Property(t => t.CompanyId)
+            this.Property(t => t.CompanyID)
                 .IsRequired()
                 .HasMaxLength(15);
 
@@ -23,11 +23,11 @@ namespace EzBilling.Models.Mapping
                 .IsRequired()
                 .HasMaxLength(50);
 
-            this.Property(t => t.BankBic)
+            this.Property(t => t.BankBIC)
                 .IsRequired()
                 .HasMaxLength(30);
 
-            this.Property(t => t.BankAccount)
+            this.Property(t => t.AccountNumber)
                 .IsRequired()
                 .HasMaxLength(100);
 
@@ -39,7 +39,7 @@ namespace EzBilling.Models.Mapping
                 .IsRequired()
                 .HasMaxLength(100);
 
-            this.Property(t => t.PhoneNumber)
+            this.Property(t => t.Phone)
                 .IsRequired()
                 .HasMaxLength(20);
 
@@ -58,17 +58,17 @@ namespace EzBilling.Models.Mapping
 
             // Table & Column Mappings
             this.ToTable("Company");
-            this.Property(t => t.CompanyId).HasColumnName("company_id");
+            this.Property(t => t.CompanyID).HasColumnName("company_id");
             this.Property(t => t.Name).HasColumnName("name");
             this.Property(t => t.Address.Street).HasColumnName("address");
             this.Property(t => t.Address.City).HasColumnName("city");
             this.Property(t => t.Address.PostalCode).HasColumnName("postal_code");
             this.Property(t => t.BankName).HasColumnName("bank_name");
-            this.Property(t => t.BankBic).HasColumnName("bank_bic");
-            this.Property(t => t.BankAccount).HasColumnName("bank_account");
+            this.Property(t => t.BankBIC).HasColumnName("bank_bic");
+            this.Property(t => t.AccountNumber).HasColumnName("bank_account");
             this.Property(t => t.BillerName).HasColumnName("biller_name");
             this.Property(t => t.Email).HasColumnName("email");
-            this.Property(t => t.PhoneNumber).HasColumnName("phone_number");
+            this.Property(t => t.Phone).HasColumnName("phone_number");
         }
     }
 }

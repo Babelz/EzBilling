@@ -29,7 +29,7 @@ namespace EzBilling.Models.Mapping
             this.Property(t => t.Quantity).HasColumnName("quantity");
             this.Property(t => t.UnitPrice).HasColumnName("unit_price");
             this.Property(t => t.Unit).HasColumnName("unit");
-            this.Property(t => t.Vat).HasColumnName("vat");
+            this.Property(t => t.VATPercent).HasColumnName("vat");
         }
     }
 }

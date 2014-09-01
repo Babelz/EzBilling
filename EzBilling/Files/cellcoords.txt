@@ -1,41 +1,41 @@
 ﻿-- no need to write values to the bottom of the bill, they are linked inside the excel file
 
-CompanyInformation.Name: C 2
+Company.Name: C 2
 
 -- joins with the postal code value
-CompanyInformation.City: C 4
-CompanyInformation.Street: C 3
+Company.City: C 4
+Company.Street: C 3
 
 -- joins with the city value
-CompanyInformation.PostalCode: C 4
+Company.PostalCode: C 4
 
-CompanyInformation.BillerName: D 57
-CompanyInformation.Phone: D 59
-CompanyInformation.Email: D 60
+Company.BillerName: D 57
+Company.Phone: D 59
+Company.Email: D 60
 
-ClientInformation.Name: C 7
-ClientInformation.Street: C 8
-ClientInformation.City: C 9
-ClientInformation.PostalCode: C 9 
+Client.Name: C 7
+Client.Address.Street: C 8
+Client.Address.City: C 9
+Client.Address.PostalCode: C 9 
 
-BillInformation.DueDate: H 5
-BillInformation.Reference: I 6
-BillInformation.AdditionalInformation: C 13
+Bill.DueDate: H 5
+Bill.Reference: I 6
+Bill.AdditionalInformation: C 13
 
-CompanyInformation.BankName: I 7
-CompanyInformation.AccountNumber: I 8
-CompanyInformation.BankBIC: I 9
+Company.BankName: I 7
+Company.AccountNumber: I 8
+Company.BankBIC: I 9
 
 -- the first row index is 18 and the last is 38, so there can be total 20 products in one bill
 
-ProductInformation.Name: C 17
-ProductInformation.Quantity: D 17
-ProductInformation.Unit: E 17
-ProductInformation.UnitPrice: F 17
-ProductInformation.VATPercent: G 17
-ProductInformation.VATAmount: H 17
-ProductInformation.Total: I 17
+Product.Name: C 17
+Product.Quantity: D 17
+Product.Unit: E 17
+Product.UnitPrice: F 17
+Product.VATPercent: G 17
+Product.VATAmount: H 17
+Product.Total: I 17
 
-BillInformation.TotalVATless: I 40
-BillInformation.VATAmount: I 41
-BillInformation.Total: I 43
+Bill.TotalVATless: I 40
+Bill.VATAmount: I 41
+Bill.Total: I 43

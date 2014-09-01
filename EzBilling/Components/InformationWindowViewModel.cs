@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using EzBilling.Models;
 
 namespace EzBilling.Components
 {

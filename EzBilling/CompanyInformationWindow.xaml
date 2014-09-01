@@ -58,16 +58,16 @@
                  DataContext="{Binding ElementName=companies_ComboBox, Path=SelectedItem}"
                  TextChanged="companyName_TextBox_TextChanged"/>
         <TextBox Name="companyStreet_TextBox" Grid.Row="3" Grid.Column="1" Margin="2"
-                 Text="{Binding Path=Street}"
+                 Text="{Binding Path=Address.Street}"
                  DataContext="{Binding ElementName=companies_ComboBox, Path=SelectedItem}"/>
         <TextBox Name="companyCity_TextBox" Grid.Row="4" Grid.Column="1" Margin="2"
-                 Text="{Binding Path=City}"
+                 Text="{Binding Path=Address.City}"
                  DataContext="{Binding ElementName=companies_ComboBox, Path=SelectedItem}"/>
         <TextBox Name="companyPostalCode_TextBox" Grid.Row="5" Grid.Column="1" Margin="2"
-                 Text="{Binding Path=PostalCode}"
+                 Text="{Binding Path=Address.PostalCode}"
                  DataContext="{Binding ElementName=companies_ComboBox, Path=SelectedItem}"/>
         <TextBox Name="companyID_TextBox" Grid.Row="6" Grid.Column="1" Margin="2"
-                 Text="{Binding Path=ID}"
+                 Text="{Binding Path=CompanyID}"
                  DataContext="{Binding ElementName=companies_ComboBox, Path=SelectedItem}"/>                 
         <TextBox Name="companyAccountNumber_TextBox" Grid.Row="7" Grid.Column="1" Margin="2"
                  Text="{Binding Path=AccountNumber}"

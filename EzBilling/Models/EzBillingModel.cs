@@ -8,12 +8,13 @@ namespace EzBilling.Models
     {
         static EzBillingModel()
         {
-            Database.SetInitializer<EzBillingModel>(null);
+            //Database.SetInitializer<EzBillingModel>(null);
         }
 
         public EzBillingModel()
             : base("Name=EzBillingModel")
         {
+            
         }
 
         public DbSet<Bill> Bills { get; set; }
