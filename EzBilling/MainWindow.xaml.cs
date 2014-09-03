@@ -253,11 +253,6 @@ namespace EzBilling
             {
                 IEnumerable<Bill> bills = BillViewModel.Items.Concat(ClientViewModel.SelectedItem.Bills)
                     .Distinct();
-
-                foreach (Bill bill in bills)
-                {
-                    
-                }
             }
         }
         #endregion
