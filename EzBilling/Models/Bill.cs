@@ -11,7 +11,7 @@ namespace EzBilling.Models
         public string CompanyID { get; set; }
         public long ClientID { get; set; }
         public string Reference { get; set; }
-        public long DueDate { get; set; }
+        public string DueDate { get; set; }
         public string AdditionalInformation { get; set; }
         public virtual Company Company { get; set; }
         public virtual Client Client { get; set; }
@@ -68,8 +68,8 @@ namespace EzBilling.Models
 
         public Bill()
         {
-            Reference = AdditionalInformation = Name = string.Empty;
-            DueDate = 0L;
+            DueDate = Reference = AdditionalInformation = Name = string.Empty;
+            
 
             this.Products = new List<Product>();
         }
