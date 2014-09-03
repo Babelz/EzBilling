@@ -57,7 +57,7 @@
             </Grid.ColumnDefinitions>
 
             <Viewbox Grid.Row="0" HorizontalAlignment="Left" Grid.ColumnSpan="2">
-                <Label Content="Yrityksen tiedot" Name="companyInformationHeader_Label" FontWeight="Bold"/>
+                <Label Content="Yrityksen tiedot" Name="companyHeader_Label" FontWeight="Bold"/>
             </Viewbox> 
             
             <!-- Company information field headers -->
@@ -136,7 +136,7 @@
                 </Grid.ColumnDefinitions>
 
                 <Viewbox Grid.Row="0"  HorizontalAlignment="Left" Grid.ColumnSpan="2">
-                    <Label Content="Asiakkaan tiedot" Name="clientInformationHeader_Label" FontWeight="Bold"/>
+                    <Label Content="Asiakkaan tiedot" Name="clientHeader_Label" FontWeight="Bold"/>
                 </Viewbox>
 
                 <!-- Client information headers -->
@@ -182,10 +182,11 @@
                 <ListView Grid.Row="1" Grid.Column="0" Name="bills_ListView" Grid.ColumnSpan="3" Margin="2"
                           SelectedItem="{Binding BillViewModel.SelectedItem}"
                           ItemsSource="{Binding BillViewModel.Items}"
-                          SelectionChanged="bills_ListView_SelectionChanged">
+                          SelectionChanged="bills_ListView_SelectionChanged"
+                          SelectionMode="Single">
                     <ListView.View>
                         <GridView>
-                            <GridViewColumn DisplayMemberBinding="{Binding Name}">
+                            <GridViewColumn DisplayMemberBinding="{Binding Name}" Width="200">
                                 <GridViewColumn.Header>
                                     <Label Content="Nimi"/>
                                 </GridViewColumn.Header>
@@ -274,23 +275,24 @@
                 <TextBox Name="productQuantity_TextBox" Grid.Row="1" Grid.Column="1" Margin="2" TextAlignment="Left" IsEnabled="False"
                          Text="{Binding Path=SelectedItem.Quantity}"
                          DataContext="{Binding ProductViewModel}"
-                         TextChanged="productInformation_TextBox_TextChanged"/>
+                         TextChanged="product_TextBox_TextChanged"/>
                 <TextBox Name="productUnit_TextBox" Grid.Row="2" Grid.Column="1" Margin="2" TextAlignment="Left" IsEnabled="False"
                          Text="{Binding Path=SelectedItem.Unit}"
                          DataContext="{Binding ProductViewModel}"/>
                 <TextBox Name="productUnitPrice_TextBox" Grid.Row="3" Grid.Column="1" Margin="2" TextAlignment="Left" IsEnabled="False"
                          Text="{Binding Path=SelectedItem.UnitPrice}"
                          DataContext="{Binding ProductViewModel}"
-                         TextChanged="productInformation_TextBox_TextChanged"/>
+                         TextChanged="product_TextBox_TextChanged"/>
                 <TextBox Name="productVATPercent_TextBox" Grid.Row="4" Grid.Column="1" Margin="2" TextAlignment="Left" IsEnabled="False"
                          Text="{Binding Path=SelectedItem.VATPercent}"
                          DataContext="{Binding ProductViewModel}"
-                         TextChanged="productInformation_TextBox_TextChanged"/>
+                         TextChanged="product_TextBox_TextChanged"/>
             </Grid>
             
             <ListView Grid.Row="4" Name="products_ListView" Margin="2" SelectionChanged="products_ListView_SelectionChanged"
                       ItemsSource="{Binding BillViewModel.SelectedItem.Products}"
-                      SelectedItem="{Binding ProductViewModel.SelectedItem}">
+                      SelectedItem="{Binding ProductViewModel.SelectedItem}"
+                      SelectionMode="Single">
                 <ListView.View>
                     <GridView>
                         <GridViewColumn DisplayMemberBinding="{Binding Name}">

@@ -31,28 +31,23 @@ namespace EzBilling.Excel
 
             // Remove comments and trim lines.
             string[] lines = File.ReadLines(cellCoordsPath)
-                .Select(l => l.Trim())
                 .Where(l => !l.StartsWith(COMMENT))
                 .Where(l => !string.IsNullOrEmpty(l))
+                .Select(l => l.Trim())
                 .ToArray();
 
-            char[] splitTokens = new char[] { '.', ' ' };
+            char[] splitTokens = new char[] { ' ' };
 
             for (int i = 0; i < lines.Length; i++)
             {
-                string[] tokens = lines[i].Split(splitTokens);
+                string[] tokens = lines[i].Split(splitTokens, StringSplitOptions.RemoveEmptyEntries);
 
-                if (tokens.Length > 4)
-                {
-                    throw new ArgumentException("Invalid token count found in cell coordinates. Line is: " + lines[i]);
-                }
+                string containingObjectName = tokens[0].Replace(":", "").Split('.').First().Trim();
+                string name = tokens[0].Replace(containingObjectName + ".", "").Replace(":", "").Trim();
+                string column = tokens[1].Trim();
+                int row = int.Parse(tokens[2].Trim());
 
-                string containingObjectname = tokens[0].Trim();
-                string name = tokens[1].Trim().Replace(":", "");
-                string column = tokens[2].Trim();
-                int row = int.Parse(tokens[3].Trim());
-
-                coordinates.Add(new CellCoordinate(containingObjectname, name, column, row));
+                coordinates.Add(new CellCoordinate(containingObjectName, name, column, row));
             }
 
             return coordinates.OrderBy(o => o.ContainingObjectName).ToList();

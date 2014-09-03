@@ -40,42 +40,34 @@ namespace EzBilling
 
         public string CreateBillName(string clientName)
         {
+            // Name for the bill.
             string billName = string.Format("{0} - {1}", clientName, DateTime.Now.Date.ToString("MM/dd/yyyy"));
+            // Filename.
             string fileName = billName + ".pdf";
+            // Clients bills dir.
             string clientBillsDirectory = string.Format(@"{0}\{1}", billsDirectory, clientName);
+            // Full dir path + filename.
             string fullPath = clientBillsDirectory + fileName;
 
             string newBillName = string.Empty;
-
-
-            fileManager.CreateDirectoryIfDoesNotExist(clientBillsDirectory);
 
             if (!File.Exists(fullPath) && !knowBillNames.Contains(billName))
             {
                 knowBillNames.Add(billName);
 
-                return fileName.Replace(".pdf", "");
+                return billName;
             }
             else
             {
-                int index = 1;
+                IEnumerable<string> fileNames = Directory.GetFiles(clientBillsDirectory)
+                    .Concat(knowBillNames);
 
-                while (true)
-                {
-                    newBillName = string.Format("{0} ({1})", billName, index);
-                    string newFullPath = string.Format(@"{0}\{1}{2}.pdf", clientBillsDirectory, clientName, string.Format(" ({0})", index.ToString()));
+                int nextEnding = fileNames.Distinct()
+                    .Count(s => s.Contains(billName));
 
-                    fullPath = fullPath.Replace(fileName, newFullPath);
-                    fileName = newFullPath;
+                newBillName = billName + string.Format(" ({0})", nextEnding);
 
-                    if(!(File.Exists(fullPath) || knowBillNames.Contains(newBillName)))
-                    {
-                        knowBillNames.Add(newBillName);
-                        break;
-                    }
-
-                    index++;
-                }
+                knowBillNames.Add(newBillName);
             }
 
             return newBillName;

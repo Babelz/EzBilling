@@ -18,6 +18,7 @@ namespace EzBilling.Excel
         private readonly List<object> billObjects;
         private readonly string billsDirectory;
         private readonly string billName;
+        private readonly string clientName;
         #endregion
 
         public BillWriter(Company company, Client client, Bill bill, string billsDirectory)
@@ -39,6 +40,7 @@ namespace EzBilling.Excel
             billObjects = billObjects.OrderBy(o => o.GetType().Name).ToList();
             
             billName = bill.Name;
+            clientName = client.Name;
 
             this.billsDirectory = billsDirectory;
         }
@@ -57,7 +59,7 @@ namespace EzBilling.Excel
             for (int i = 0; i < billObjects.Count; i++)
             {
                 Type type = billObjects[i].GetType();
-                string name = type.Name;
+                string name = type.Name.Split('_').First();
 
                 int start = coordinates.IndexOf(coordinates.First(c => c.ContainingObjectName == name));
 
@@ -89,14 +91,13 @@ namespace EzBilling.Excel
         }
         public void SaveBillAsPDF(Worksheet worksheet)
         {
-            string directory =  string.Format("{0}{1}\\", billsDirectory, billName);
-            string filename = string.Format("{0}{1}.pdf", billsDirectory, billName);
-            string fullPath = directory + filename;
+            string directory = string.Format("{0}\\{1}", billsDirectory, clientName);
+            string fullName = string.Format("{0}\\{1}{2}", directory, billName, ".pdf");
 
             fileManager.CreateDirectoryIfDoesNotExist(directory);
-            fileManager.CreateFileIfDoesNotExist(fullPath);
+            fileManager.CreateFileIfDoesNotExist(fullName);
 
-            worksheet.ExportAsFixedFormat(XlFixedFormatType.xlTypePDF, fullPath);
+            worksheet.ExportAsFixedFormat(XlFixedFormatType.xlTypePDF, fullName);
         }
     }
 }

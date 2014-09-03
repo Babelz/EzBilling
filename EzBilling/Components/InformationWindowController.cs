@@ -42,10 +42,9 @@ namespace EzBilling.Components
 
             if (result == MessageBoxResult.Yes)
             {
-                viewModel.Items.Remove(viewModel.SelectedItem);
-
                 removeFromDatabase(viewModel.SelectedItem);
 
+                viewModel.Items.Remove(viewModel.SelectedItem);
                 viewModel.SelectedItem = null;
 
                 ResetFields();

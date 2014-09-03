@@ -14,9 +14,9 @@ Company.Phone: D 59
 Company.Email: D 60
 
 Client.Name: C 7
-Client.Address.Street: C 8
-Client.Address.City: C 9
-Client.Address.PostalCode: C 9 
+Client.Street: C 8
+Client.City: C 9
+Client.PostalCode: C 9 
 
 Bill.DueDate: H 5
 Bill.Reference: I 6

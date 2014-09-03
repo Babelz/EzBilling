@@ -17,7 +17,7 @@ using EzBilling.Models;
 
 namespace EzBilling
 {
-    public partial class CompanyInformationWindow : Window
+    public partial class companyWindow : Window
     {
         #region Constants
         // Dict keys.
@@ -36,8 +36,7 @@ namespace EzBilling
 
         #region Vars
         private readonly InformationWindowController<Company> controller;
-
-        private readonly CompanyRepository database;
+        private readonly CompanyRepository companyRepository;
         #endregion
 
         #region Properties
@@ -48,10 +47,12 @@ namespace EzBilling
         }
         #endregion
 
-        public CompanyInformationWindow()
+        public companyWindow(CompanyRepository companyRepository)
         {
+            this.companyRepository = companyRepository;
+            
             CompanyWindowViewModel = new InformationWindowViewModel<Company>();
-            CompanyWindowViewModel.Items = new ObservableCollection<Company>();
+            CompanyWindowViewModel.Items = new ObservableCollection<Company>(companyRepository.All.ToList());
 
             InitializeComponent();
 
@@ -72,10 +73,6 @@ namespace EzBilling
                 companyPhoneNumber_TextBox,
                 companyEmailAddress_TextBox
             });
-
-            database = new CompanyRepository(new EzBillingModel());
-
-            LoadInformationsFromDatabase();
         }
 
         private Dictionary<string, string> GetFieldInformations()
@@ -95,11 +92,11 @@ namespace EzBilling
                 { EMAILADDRESS, companyEmailAddress_TextBox.Text },
             };
         }
-        private Company BuildCompanyInformation()
+        private Company BuildCompany()
         {
             Dictionary<string, string> valuePairs = GetFieldInformations();
 
-            Company companyInformation = new Company()
+            Company company = new Company()
             {
                 Name = valuePairs[NAME],
                 CompanyID = valuePairs[ID],
@@ -110,37 +107,41 @@ namespace EzBilling
                 Phone = valuePairs[PHONENUMBER],
                 Email = valuePairs[EMAILADDRESS]
             };
-            companyInformation.Address.Street = valuePairs[STREET];
-            companyInformation.Address.City = valuePairs[CITY];
-            companyInformation.Address.PostalCode = valuePairs[POSTALCODE];
 
-            return companyInformation;
-        }
-        private void RemoveFromDatabase(Company companyInformation)
-        {
-        }
-        private void AddToDatabase(Company companyInformation)
-        {
-        }
-        private void LoadInformationsFromDatabase()
-        {
-            List<Company> list = database.All.ToList();
-            CompanyWindowViewModel.Items.Clear();
+            company.Address.Street = valuePairs[STREET];
+            company.Address.City = valuePairs[CITY];
+            company.Address.PostalCode = valuePairs[POSTALCODE];
 
-            for (int i = 0; i < list.Count; i++)
+            return company;
+        }
+        private void RemoveFromDatabase(Company company)
+        {
+            CompanyWindowViewModel.Items.Remove(company);
+            companyRepository.Delete(company);
+
+            if (ReferenceEquals(company, CompanyWindowViewModel.SelectedItem))
             {
-                CompanyWindowViewModel.Items.Add(list[i]);
+                CompanyWindowViewModel.SelectedItem = null;
             }
+
+            companyRepository.Save();
+        }
+        private void AddToDatabase(Company company)
+        {
+            CompanyWindowViewModel.Items.Add(company);
+            companyRepository.InsertOrUpdate(company);
+
+            companyRepository.Save();
         }
 
         #region Event handlers
-        private void saveCompanyInformation_Button_Click(object sender, RoutedEventArgs e)
+        private void savecompany_Button_Click(object sender, RoutedEventArgs e)
         {
-            Company info = BuildCompanyInformation();
+            Company info = BuildCompany();
 
             controller.AddInformation(string.Format("Yrityksen {0} tiedot lisätty.", info.Name), AddToDatabase, info);
         }
-        private void deleteCompanyInformation_Button_Click(object sender, RoutedEventArgs e)
+        private void deletecompany_Button_Click(object sender, RoutedEventArgs e)
         {
             controller.DeleteInformation(string.Format("Haluatko varmasti poistaa yrityksen {0} tiedot?", CompanyWindowViewModel.SelectedItem.Name), RemoveFromDatabase);
         }
@@ -150,11 +151,11 @@ namespace EzBilling
         }
         private void companyName_TextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            saveCompanyInformation_Button.IsEnabled = companyName_TextBox.Text.Length > 0;
+            savecompany_Button.IsEnabled = companyName_TextBox.Text.Length > 0;
         }
         private void companies_ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            deleteCompanyInformation_Button.IsEnabled = companies_ComboBox.SelectedIndex != -1;
+            deletecompany_Button.IsEnabled = companies_ComboBox.SelectedIndex != -1;
         }
         #endregion
     }

@@ -13,5 +13,10 @@ namespace EzBilling.Models
         public string City { get; set; }
         public string Street { get; set; }
         public string PostalCode { get; set; }
+
+        public Address()
+        {
+            City = Street = PostalCode = string.Empty;
+        }
     }
 }

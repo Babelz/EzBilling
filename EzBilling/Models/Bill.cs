@@ -6,11 +6,7 @@ namespace EzBilling.Models
 {
     public partial class Bill
     {
-        public Bill()
-        {
-            this.Products = new List<Product>();
-        }
-
+        #region Properties
         public long BillID { get; set; }
         public string CompanyID { get; set; }
         public long ClientID { get; set; }
@@ -22,5 +18,61 @@ namespace EzBilling.Models
         public virtual IList<Product> Products { get; set; }
         [NotMapped]
         public string Name { get; set; }
+        [NotMapped]
+        public string Total
+        {
+            get
+            {
+                decimal total = 0.0m;
+
+                for (int i = 0; i < Products.Count; i++)
+                {
+                    total += decimal.Parse(Products[i].Total);
+                }
+
+                return total.ToString();
+            }
+        }
+        [NotMapped]
+        public string TotalVATless
+        {
+            get
+            {
+                decimal total = 0.0m;
+
+                for (int i = 0; i < Products.Count; i++)
+                {
+                    total += decimal.Parse(Products[i].TotalVATless);
+                }
+
+                return total.ToString();
+            }
+        }
+        [NotMapped]
+        public string VATAmount
+        {
+            get
+            {
+                decimal total = 0.0m;
+
+                for (int i = 0; i < Products.Count; i++)
+                {
+                    total += decimal.Parse(Products[i].VATAmount);
+                }
+
+                return total.ToString();
+            }
+        }
+
+
+        #endregion
+
+        public Bill()
+        {
+            Reference = AdditionalInformation = Name = string.Empty;
+            DueDate = 0L;
+
+            this.Products = new List<Product>();
+        }
     }
 }

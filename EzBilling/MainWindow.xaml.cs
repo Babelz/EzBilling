@@ -15,9 +15,6 @@ using EzBilling.Models;
 
 namespace EzBilling
 {
-    /// <summary>
-    /// TODO: could split sections to custom controls?
-    /// </summary>
     public partial class MainWindow : Window
     {
         #region Vars
@@ -27,8 +24,8 @@ namespace EzBilling
         private readonly CompanyRepository companyRepository;
         private EzBillingModel model;
         private readonly ClientRepository clientRepository;
-        private readonly ClientInformationWindow clientInformationWindow;
-        private readonly CompanyInformationWindow companyInformationWindow;
+        private readonly clientWindow clientWindow;
+        private readonly companyWindow companyWindow;
         #endregion
 
         #region Properties
@@ -65,19 +62,20 @@ namespace EzBilling
             clientRepository = new ClientRepository(model);
             companyRepository = new CompanyRepository(model);
 
-            clientInformationWindow = new ClientInformationWindow();
-            companyInformationWindow = new CompanyInformationWindow();
+            clientWindow = new clientWindow(clientRepository);
+            companyWindow = new companyWindow(companyRepository);
 
-            clientInformationWindow.Closing += new CancelEventHandler(window_Closing);
-            companyInformationWindow.Closing += new CancelEventHandler(window_Closing);
+            clientWindow.Closing += new CancelEventHandler(window_Closing);
+            companyWindow.Closing += new CancelEventHandler(window_Closing);
 
             excelConnection = new ExcelConnection();
+            billManager = new BillManager();
 
             ClientViewModel = new InformationWindowViewModel<Client>();
-            ClientViewModel.Items = new ObservableCollection<Client>();
+            ClientViewModel.Items = new ObservableCollection<Client>(clientRepository.All.ToList());
 
             CompanyViewModel = new InformationWindowViewModel<Company>();
-            CompanyViewModel.Items = new ObservableCollection<Company>();
+            CompanyViewModel.Items = new ObservableCollection<Company>(companyRepository.All.ToList());
             CompanyViewModel.PropertyChanged += CompanyViewModel_PropertyChanged;
 
             ProductViewModel = new InformationWindowViewModel<Product>();
@@ -87,8 +85,6 @@ namespace EzBilling
             BillViewModel = new InformationWindowViewModel<Bill>();
             BillViewModel.Items = new ObservableCollection<Bill>();
             BillViewModel.PropertyChanged += BillViewModel_PropertyChanged;
-
-            billManager = new BillManager();
 
             productSectionInputFields = new TextBox[] 
             {
@@ -101,11 +97,7 @@ namespace EzBilling
 
             DataContext = this;
 
-            LoadItemsFromDatabase();
             excelConnection.Open();
-
-            clientInformationWindow.ClientWindowViewModel.Items = ClientViewModel.Items;
-            companyInformationWindow.CompanyWindowViewModel.Items = CompanyViewModel.Items;
         }
 
         private void CompanyViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -115,7 +107,6 @@ namespace EzBilling
                 clientAndBillWrapper_Grid.IsEnabled = CompanyViewModel.SelectedItem != null;
             }
         }
-
         private void ProductViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "SelectedItem")
@@ -128,30 +119,11 @@ namespace EzBilling
                 }
             }
         }
-
         private void BillViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "SelectedItem")
             {
                 productSection_Grid.IsEnabled = BillViewModel.SelectedItem != null;
-            }
-        }
-
-        private void LoadItemsFromDatabase()
-        {
-            ClientViewModel.Items.Clear();
-            CompanyViewModel.Items.Clear();
-
-            List<Company> companyInfos = companyRepository.All.ToList();
-            List<Client> clientInfos = clientRepository.All.ToList();
-
-            for (int i = 0; i < companyInfos.Count; i++)
-            {
-                CompanyViewModel.Items.Add(companyInfos[i]);
-            }
-            for (int i = 0; i < clientInfos.Count; i++)
-            {
-                ClientViewModel.Items.Add(clientInfos[i]);
             }
         }
         private void AsyncUndo(TextBox textBox)
@@ -177,12 +149,30 @@ namespace EzBilling
 
             return result;
         }
-        private Bill MakeNew()
+        private Bill NewBill()
         {
             return new Bill()
             {
                 Name = billManager.CreateBillName(ClientViewModel.SelectedItem.Name)
             };
+        }
+        private void UpdateClientInformations()
+        {
+            ClientViewModel.Items = new ObservableCollection<Client>(clientRepository.All);
+
+            if (!ClientViewModel.Items.Contains(ClientViewModel.SelectedItem))
+            {
+                ClientViewModel.SelectedItem = null;
+            }
+        }
+        private void UpdateCompanyInformations()
+        {
+            CompanyViewModel.Items = new ObservableCollection<Company>(companyRepository.All);
+
+            if (!CompanyViewModel.Items.Contains(CompanyViewModel.SelectedItem))
+            {
+                CompanyViewModel.SelectedItem = null;
+            }
         }
 
         #region Main window event handlers
@@ -193,8 +183,8 @@ namespace EzBilling
         {
             excelConnection.Close();
 
-            companyInformationWindow.Close();
-            clientInformationWindow.Close();
+            companyWindow.Close();
+            clientWindow.Close();
         }
         #endregion
 
@@ -213,6 +203,15 @@ namespace EzBilling
 
             e.Cancel = true;
             window.Hide();
+
+            if (ReferenceEquals(sender, clientWindow))
+            {
+                UpdateClientInformations();
+            }
+            else
+            {
+                UpdateCompanyInformations();
+            }
         }
         #endregion
 
@@ -227,17 +226,17 @@ namespace EzBilling
         }
         private void editCompanyInfos_MenuItem_Click(object sender, RoutedEventArgs e)
         {
-            companyInformationWindow.Show();
-            companyInformationWindow.Topmost = true;
-            companyInformationWindow.Focus();
-            companyInformationWindow.Activate();
+            companyWindow.Show();
+            companyWindow.Topmost = true;
+            companyWindow.Focus();
+            companyWindow.Activate();
         }
         private void editClientInfos_MenuItem_Click(object sender, RoutedEventArgs e)
         {
-            clientInformationWindow.Show();
-            clientInformationWindow.Topmost = true;
-            clientInformationWindow.Focus();
-            clientInformationWindow.Activate();
+            clientWindow.Show();
+            clientWindow.Topmost = true;
+            clientWindow.Focus();
+            clientWindow.Activate();
         }
         #endregion
 
@@ -303,7 +302,7 @@ namespace EzBilling
         {
             Dispatcher.BeginInvoke(new Action(() =>
             {
-                BillViewModel.SelectedItem = MakeNew();
+                BillViewModel.SelectedItem = NewBill();
 
                 if (!BillViewModel.Items.Contains(BillViewModel.SelectedItem))
                 {
@@ -319,8 +318,6 @@ namespace EzBilling
         {
             if (ValidateBill())
             {
-                BillViewModel.Items.Add(BillViewModel.SelectedItem);
-
                 billManager.SaveBillAsPDF(excelConnection.GetWorksheet(), CompanyViewModel.SelectedItem, ClientViewModel.SelectedItem, BillViewModel.SelectedItem);
                 excelConnection.ResetWorksheet();
 
@@ -335,7 +332,7 @@ namespace EzBilling
             deleteBill_Button.IsEnabled = bills_ListView.SelectedIndex != -1 && !string.IsNullOrEmpty(BillViewModel.SelectedItem.Name);
             printBill_Button.IsEnabled = bills_ListView.SelectedIndex != -1;
         }
-        private void productInformation_TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        private void product_TextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             addProduct_Button.IsEnabled = productName_TextBox.Text.Length > 0 &&
                                           productQuantity_TextBox.Text.Length > 0 &&
@@ -344,7 +341,7 @@ namespace EzBilling
 
             TextBox textBox = sender as TextBox;
 
-            int dotcount = textBox.Text.Count(c => c == ',');
+            int dotcount = textBox.Text.Count(c => c == '.');
 
             if (dotcount > 1)
             {
@@ -354,7 +351,7 @@ namespace EzBilling
 
             for (int i = 0; i < textBox.Text.Length; i++)
             {
-                if (!(char.IsDigit(textBox.Text[i]) || textBox.Text[i] == ','))
+                if (!(char.IsDigit(textBox.Text[i]) || textBox.Text[i] == '.'))
                 {
                     AsyncUndo(textBox);
                     return;
