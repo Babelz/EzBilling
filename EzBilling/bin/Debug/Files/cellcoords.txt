@@ -1,0 +1,41 @@
+﻿-- no need to write values to the bottom of the bill, they are linked inside the excel file
+
+Company.Name: C 2
+
+-- joins with the postal code value
+Company.City: C 4
+Company.Street: C 3
+
+-- joins with the city value
+Company.PostalCode: C 4
+
+Company.BillerName: D 57
+Company.Phone: D 59
+Company.Email: D 60
+
+Client.Name: C 7
+Client.Street: C 8
+Client.City: C 9
+Client.PostalCode: C 9 
+
+Bill.DueDate: H 5
+Bill.Reference: I 6
+Bill.AdditionalInformation: C 13
+
+Company.BankName: I 7
+Company.AccountNumber: I 8
+Company.BankBIC: I 9
+
+-- the first row index is 18 and the last is 38, so there can be total 20 products in one bill
+
+Product.Name: C 17
+Product.Quantity: D 17
+Product.Unit: E 17
+Product.UnitPrice: F 17
+Product.VATPercent: G 17
+Product.VATAmount: H 17
+Product.Total: I 17
+
+Bill.TotalVATless: I 40
+Bill.VATAmount: I 41
+Bill.Total: I 43
