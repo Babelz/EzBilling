@@ -10,7 +10,7 @@ namespace EzBilling.Models
         public long ClientId { get; set; }
         public string Name { get; set; }
         public Address Address { get; set; }
-        public virtual ICollection<Bill> Bills { get; set; }
+        public virtual IList<Bill> Bills { get; set; }
 
         // For being lazy and so that BillWriter can understand this.
         [NotMapped]

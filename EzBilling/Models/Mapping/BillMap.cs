@@ -18,6 +18,10 @@ namespace EzBilling.Models.Mapping
                 .IsRequired()
                 .HasMaxLength(15);
 
+            this.Property(t => t.Name)
+                .IsRequired()
+                .HasMaxLength(255);
+
             this.Property(t => t.Reference)
                 .HasMaxLength(100);
 
@@ -27,6 +31,7 @@ namespace EzBilling.Models.Mapping
             // Table & Column Mappings
             this.ToTable("Bill");
             this.Property(t => t.BillID).HasColumnName("bill_id");
+            this.Property(t => t.Name).HasColumnName("name");
             this.Property(t => t.CompanyID).HasColumnName("company");
             this.Property(t => t.ClientID).HasColumnName("client");
             this.Property(t => t.Reference).HasColumnName("reference");

@@ -16,7 +16,6 @@ namespace EzBilling.Models
         public virtual Company Company { get; set; }
         public virtual Client Client { get; set; }
         public virtual IList<Product> Products { get; set; }
-        [NotMapped]
         public string Name { get; set; }
         [NotMapped]
         public string Total

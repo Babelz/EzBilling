@@ -22,10 +22,12 @@ namespace EzBilling
         private readonly BillManager billManager;
         private readonly ExcelConnection excelConnection;
         private readonly CompanyRepository companyRepository;
-        private EzBillingModel model;
         private readonly ClientRepository clientRepository;
         private readonly clientWindow clientWindow;
         private readonly companyWindow companyWindow;
+        private readonly BillRepository billRepository;
+
+        private EzBillingModel model;
         #endregion
 
         #region Properties
@@ -61,6 +63,7 @@ namespace EzBilling
             model = new EzBillingModel();
             clientRepository = new ClientRepository(model);
             companyRepository = new CompanyRepository(model);
+            billRepository = new BillRepository(model);
 
             clientWindow = new clientWindow(clientRepository);
             companyWindow = new companyWindow(companyRepository);
@@ -245,6 +248,17 @@ namespace EzBilling
         {
             // TODO: get bills for selected client.
             newBill_Button.IsEnabled = clientName_ComboBox.SelectedIndex != -1;
+
+            if (ClientViewModel.SelectedItem != null)
+            {
+                IEnumerable<Bill> bills = BillViewModel.Items.Concat(ClientViewModel.SelectedItem.Bills)
+                    .Distinct();
+
+                foreach (Bill bill in bills)
+                {
+                    
+                }
+            }
         }
         #endregion
 
@@ -322,6 +336,9 @@ namespace EzBilling
                 excelConnection.ResetWorksheet();
 
                 // TODO: write to database.
+                ClientViewModel.SelectedItem.Bills.Add(BillViewModel.SelectedItem);
+                clientRepository.InsertOrUpdate(ClientViewModel.SelectedItem);
+                clientRepository.Save();
 
                 MessageBox.Show("Lasku tallennettu.", "EzBilling", MessageBoxButton.OK);
             }
