@@ -65,7 +65,7 @@ namespace EzBilling.Excel
 
                 for (int j = start; j < coordinates.Count; j++)
                 {
-                    int row = type == typeof(Product) ? productIndex : coordinates[j].Row;
+                    int row = name == typeof(Product).Name ? productIndex : coordinates[j].Row;
 
                     // Get the property that matches cell coordinates name property.
                     PropertyInfo property = type.GetProperty(coordinates[j].Name);
@@ -83,7 +83,7 @@ namespace EzBilling.Excel
                     break;
                 }
 
-                if (type == typeof(Product))
+                if (name == typeof(Product).Name)
                 {
                     productIndex++;
                 }

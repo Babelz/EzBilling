@@ -129,6 +129,7 @@ namespace EzBilling
                 productSection_Grid.IsEnabled = BillViewModel.SelectedItem != null;
             }
         }
+
         private void AsyncUndo(TextBox textBox)
         {
             Dispatcher.BeginInvoke(new Action(() => { textBox.Undo(); }));
@@ -251,8 +252,8 @@ namespace EzBilling
 
             if (ClientViewModel.SelectedItem != null)
             {
-                IEnumerable<Bill> bills = BillViewModel.Items.Concat(ClientViewModel.SelectedItem.Bills)
-                    .Distinct();
+                BillViewModel.Items = new ObservableCollection<Bill>(ClientViewModel.SelectedItem.Bills);
+                BillViewModel.SelectedItem = null;
             }
         }
         #endregion
@@ -329,6 +330,10 @@ namespace EzBilling
             {
                 billManager.SaveBillAsPDF(excelConnection.GetWorksheet(), CompanyViewModel.SelectedItem, ClientViewModel.SelectedItem, BillViewModel.SelectedItem);
                 excelConnection.ResetWorksheet();
+
+                BillViewModel.SelectedItem.CompanyID = CompanyViewModel.SelectedItem.CompanyID;
+                BillViewModel.SelectedItem.Client = ClientViewModel.SelectedItem;
+                BillViewModel.SelectedItem.ClientID = ClientViewModel.SelectedItem.ClientId;
 
                 // TODO: write to database.
                 ClientViewModel.SelectedItem.Bills.Add(BillViewModel.SelectedItem);
