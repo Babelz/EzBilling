@@ -38,6 +38,12 @@ namespace EzBilling
             knowBillNames = new List<string>();
         }
 
+        public FileInfo ResolveBill(string clientName, string billName)
+        {
+            string fullPath = string.Format("{0}\\{1}\\{2}.pdf", billsDirectory, clientName, billName);
+
+            return new FileInfo(fullPath);
+        }
         public string CreateBillName(string clientName)
         {
             // Name for the bill.

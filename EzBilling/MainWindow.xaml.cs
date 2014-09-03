@@ -12,9 +12,13 @@ using System.IO;
 using System.Text.RegularExpressions;
 using EzBilling.Components;
 using EzBilling.Models;
+using System.Windows.Documents;
+using System.Diagnostics;
 
 namespace EzBilling
 {
+    // TODO: total and vat amount labels wont get new values when changing, removing or adding product informations.
+    // TODO: selected client is null some times?
     public partial class MainWindow : Window
     {
         #region Vars
@@ -36,19 +40,16 @@ namespace EzBilling
             get;
             private set;
         }
-
         public InformationWindowViewModel<Company> CompanyViewModel
         {
             get;
             private set;
         }
-
         public InformationWindowViewModel<Bill> BillViewModel
         {
             get;
             private set;
         }
-
         public InformationWindowViewModel<Product> ProductViewModel
         {
             get;
@@ -247,7 +248,6 @@ namespace EzBilling
         #region Client section event handlers
         private void clientName_ComboBox_SelectionChanged_1(object sender, SelectionChangedEventArgs e)
         {
-            // TODO: get bills for selected client.
             newBill_Button.IsEnabled = clientName_ComboBox.SelectedIndex != -1;
 
             if (ClientViewModel.SelectedItem != null)
@@ -255,6 +255,8 @@ namespace EzBilling
                 BillViewModel.Items = new ObservableCollection<Bill>(ClientViewModel.SelectedItem.Bills);
                 BillViewModel.SelectedItem = null;
             }
+
+            bills_ListView.Items.Refresh();
         }
         #endregion
 
@@ -272,7 +274,26 @@ namespace EzBilling
         }
         private void addProduct_Button_Click(object sender, RoutedEventArgs e)
         {
-            BillViewModel.SelectedItem.Products.Add(ProductViewModel.SelectedItem);
+            if (BillViewModel.SelectedItem.Products.Contains(ProductViewModel.SelectedItem))
+            {
+                Product selected = ProductViewModel.SelectedItem;
+
+                Product product = new Product()
+                {
+                    Name = selected.Name,
+                    Quantity = selected.Quantity,
+                    Unit = selected.Unit,
+                    UnitPrice = selected.UnitPrice,
+                    VATPercent = selected.VATPercent,
+                    ProductID = 0
+                };
+
+                BillViewModel.SelectedItem.Products.Add(product);
+            }
+            else
+            {
+                BillViewModel.SelectedItem.Products.Add(ProductViewModel.SelectedItem);
+            }
 
             products_ListView.Items.Refresh();
         }
@@ -285,7 +306,31 @@ namespace EzBilling
         #region Bill section event handlers
         private void printBill_Button_Click(object sender, RoutedEventArgs e)
         {
-            // TODO: print current bill.
+            Bill bill = BillViewModel.SelectedItem;
+
+            FileInfo fileInfo = billManager.ResolveBill(ClientViewModel.SelectedItem.Name, bill.Name);
+
+            if (!fileInfo.Exists)
+            {
+                MessageBox.Show("Lasku pitää tallentaa ennen tulostamista.");
+                return;
+            }
+            else
+            {
+                // Write changes.
+                billManager.SaveBillAsPDF(excelConnection.GetWorksheet(), CompanyViewModel.SelectedItem, ClientViewModel.SelectedItem, bill);
+                excelConnection.ResetWorksheet();
+
+                clientRepository.InsertOrUpdate(ClientViewModel.SelectedItem);
+                clientRepository.Save();
+            }
+
+            ProcessStartInfo info = new ProcessStartInfo(fileInfo.FullName);
+            info.Verb = "Print";
+            info.CreateNoWindow = true;
+            info.WindowStyle = ProcessWindowStyle.Hidden;
+
+            Process.Start(info);
         }
         private void deleteBill_Button_Click(object sender, RoutedEventArgs e)
         {
@@ -299,7 +344,9 @@ namespace EzBilling
                 {
                     File.Delete(path);
 
-                    // TODO: remove from db.
+                    ClientViewModel.SelectedItem.Bills.Remove(BillViewModel.SelectedItem);
+                    clientRepository.InsertOrUpdate(ClientViewModel.SelectedItem);
+                    clientRepository.Save();
                 }
 
                 BillViewModel.Items.Remove(BillViewModel.SelectedItem);
@@ -335,7 +382,6 @@ namespace EzBilling
                 BillViewModel.SelectedItem.Client = ClientViewModel.SelectedItem;
                 BillViewModel.SelectedItem.ClientID = ClientViewModel.SelectedItem.ClientId;
 
-                // TODO: write to database.
                 ClientViewModel.SelectedItem.Bills.Add(BillViewModel.SelectedItem);
                 clientRepository.InsertOrUpdate(ClientViewModel.SelectedItem);
                 clientRepository.Save();

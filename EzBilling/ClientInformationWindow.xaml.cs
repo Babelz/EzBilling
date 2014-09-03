@@ -83,6 +83,7 @@ namespace EzBilling
             {
                 Name = valuePairs[NAME]
             };
+
             client.Address.Street = valuePairs[STREET];
             client.Address.City = valuePairs[CITY];
             client.Address.PostalCode = valuePairs[POSTALCODE];
@@ -112,6 +113,16 @@ namespace EzBilling
         #region Event handlers
         private void saveclient_Button_Click(object sender, RoutedEventArgs e)
         {
+            if (ClientWindowViewModel.Items.Contains(ClientWindowViewModel.SelectedItem))
+            {
+                clientRepository.InsertOrUpdate(ClientWindowViewModel.SelectedItem);
+                clientRepository.Save();
+
+                MessageBox.Show("Muutokset tallennettu.", "EzBilling", MessageBoxButton.OK);
+
+                return;
+            }
+
             Client info = BuildClient();
 
             controller.AddInformation(string.Format("Asiakkaan {0} tiedot lisätyy.", info.Name), AddToDatabase, info);

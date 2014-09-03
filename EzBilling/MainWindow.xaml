@@ -18,7 +18,7 @@
         <!-- Top menu section -->
         <Menu Grid.ColumnSpan="3">
             <!-- Billing menu  -->
-            <MenuItem Header="Laskutus" Margin="3">
+            <MenuItem Header="Ohjelma" Margin="3">
                 <MenuItem Header="Sulje ohjelma" Name="closeProgram_MenuItem" Click="closeProgram_MenuItem_Click"/>
             </MenuItem>
             
@@ -239,9 +239,15 @@
                 <Label Content="Lisätiedot: " Grid.Row="2" VerticalAlignment="Bottom" HorizontalAlignment="Right"/>
                 
                 <!-- Bill information input fields -->
-                <TextBox Name="billReference_TextBox" Grid.Column="1" Margin="2"/>
-                <TextBox Name="billDueDate_TextBox" Grid.Column="1" Grid.Row="1" Margin="2"/>
-                <TextBox Name="billAdditionalInformation_TextBox" Grid.Column="1" Grid.Row="2" Margin="2"/>
+                <TextBox Name="billReference_TextBox" Grid.Column="1" Margin="2"
+                         Text="{Binding Path=SelectedItem.Reference}"
+                         DataContext="{Binding BillViewModel}"/>
+                <TextBox Name="billDueDate_TextBox" Grid.Column="1" Grid.Row="1" Margin="2"
+                         Text="{Binding Path=SelectedItem.DueDate}"
+                         DataContext="{Binding BillViewModel}"/>
+                <TextBox Name="billAdditionalInformation_TextBox" Grid.Column="1" Grid.Row="2" Margin="2"
+                        Text="{Binding Path=SelectedItem.AdditionalInformation}"
+                        DataContext="{Binding BillViewModel}"/>
             </Grid>
 
             <Viewbox Grid.Row="2" HorizontalAlignment="Left">

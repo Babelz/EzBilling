@@ -29,7 +29,7 @@ namespace EzBilling.Models
                     total += decimal.Parse(Products[i].Total);
                 }
 
-                return total.ToString();
+                return total.ToString("00.00");
             }
         }
         [NotMapped]
@@ -44,7 +44,7 @@ namespace EzBilling.Models
                     total += decimal.Parse(Products[i].TotalVATless);
                 }
 
-                return total.ToString();
+                return total.ToString("00.00");
             }
         }
         [NotMapped]
@@ -59,7 +59,7 @@ namespace EzBilling.Models
                     total += decimal.Parse(Products[i].VATAmount);
                 }
 
-                return total.ToString();
+                return total.ToString("00.00");
             }
         }
 

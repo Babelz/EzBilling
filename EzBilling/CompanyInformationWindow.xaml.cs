@@ -137,6 +137,16 @@ namespace EzBilling
         #region Event handlers
         private void savecompany_Button_Click(object sender, RoutedEventArgs e)
         {
+            if (CompanyWindowViewModel.Items.Contains(CompanyWindowViewModel.SelectedItem))
+            {
+                companyRepository.InsertOrUpdate(CompanyWindowViewModel.SelectedItem);
+                companyRepository.Save();
+
+                MessageBox.Show("Muutokset tallennettu.", "EzBilling", MessageBoxButton.OK);
+
+                return;
+            }
+
             Company info = BuildCompany();
 
             controller.AddInformation(string.Format("Yrityksen {0} tiedot lisätty.", info.Name), AddToDatabase, info);

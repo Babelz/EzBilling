@@ -8,11 +8,11 @@ namespace EzBilling.Models.Mapping
         public ProductMap()
         {
             // Primary Key
-            this.HasKey(t => t.ProductId);
+            this.HasKey(t => t.ProductID);
 
             // Properties
-            this.Property(t => t.ProductId)
-                .HasDatabaseGeneratedOption(DatabaseGeneratedOption.None);
+            this.Property(t => t.ProductID)
+                .HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
 
             this.Property(t => t.Name)
                 .IsRequired()
@@ -24,7 +24,7 @@ namespace EzBilling.Models.Mapping
 
             // Table & Column Mappings
             this.ToTable("Product");
-            this.Property(t => t.ProductId).HasColumnName("product_id");
+            this.Property(t => t.ProductID).HasColumnName("product_id");
             this.Property(t => t.Name).HasColumnName("name");
             this.Property(t => t.Quantity).HasColumnName("quantity");
             this.Property(t => t.UnitPrice).HasColumnName("unit_price");

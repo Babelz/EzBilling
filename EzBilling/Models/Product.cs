@@ -7,7 +7,7 @@ namespace EzBilling.Models
     public class Product
     {
         #region Vars
-        public long ProductId { get; set; }
+        public long ProductID { get; set; }
         public string Name { get; set; }
         public decimal Quantity { get; set; }
         public long UnitPrice { get; set; }
@@ -19,7 +19,7 @@ namespace EzBilling.Models
         {
             get
             {
-                return (decimal.Parse(TotalVATless) + decimal.Parse(VATAmount)).ToString();
+                return (decimal.Parse(TotalVATless) + decimal.Parse(VATAmount)).ToString("00.00");
             }
         }
         [NotMapped]
@@ -27,7 +27,7 @@ namespace EzBilling.Models
         {
             get
             {
-                return (UnitPrice * Quantity).ToString();
+                return (UnitPrice * Quantity).ToString("00.00");
             }
         }
         [NotMapped]
@@ -38,7 +38,7 @@ namespace EzBilling.Models
                 decimal VATless = UnitPrice * Quantity;
                 decimal percent = VATless / 100.0m;
 
-                return (percent * VATPercent).ToString();
+                return (percent * VATPercent).ToString("00.00");
             }
         }
         #endregion

@@ -10,8 +10,8 @@ Company.Street: C 3
 Company.PostalCode: C 4
 
 Company.BillerName: D 57
-Company.Phone: D 59
-Company.Email: D 60
+Company.Phone: D 58
+Company.Email: D 59
 
 Client.Name: C 7
 Client.Street: C 8
