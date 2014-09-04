@@ -67,14 +67,14 @@ namespace EzBilling
             companyRepository = new CompanyRepository(model);
             billRepository = new BillRepository(model);
 
-            clientWindow = new clientWindow(clientRepository);
-            companyWindow = new companyWindow(companyRepository);
+            excelConnection = new ExcelConnection();
+            billManager = new BillManager();
+
+            clientWindow = new clientWindow(clientRepository, billRepository, billManager);
+            companyWindow = new companyWindow(companyRepository, billRepository, billManager);
 
             clientWindow.Closing += new CancelEventHandler(window_Closing);
             companyWindow.Closing += new CancelEventHandler(window_Closing);
-
-            excelConnection = new ExcelConnection();
-            billManager = new BillManager();
 
             ClientViewModel = new InformationWindowViewModel<Client>();
             ClientViewModel.Items = new ObservableCollection<Client>(clientRepository.All.ToList());
@@ -90,6 +90,8 @@ namespace EzBilling
             BillViewModel = new InformationWindowViewModel<Bill>();
             BillViewModel.Items = new ObservableCollection<Bill>();
             BillViewModel.PropertyChanged += BillViewModel_PropertyChanged;
+
+            this.Closing += MainWindow_Closing;
 
             productSectionInputFields = new TextBox[] 
             {
@@ -166,19 +168,46 @@ namespace EzBilling
         {
             ClientViewModel.Items = new ObservableCollection<Client>(clientRepository.All);
 
-            if (!ClientViewModel.Items.Contains(ClientViewModel.SelectedItem))
+            if (ClientViewModel.SelectedItem != null && !ClientViewModel.Items.Contains(ClientViewModel.SelectedItem))
             {
                 ClientViewModel.SelectedItem = null;
             }
+
+            ResetModels();
         }
         private void UpdateCompanyInformations()
         {
             CompanyViewModel.Items = new ObservableCollection<Company>(companyRepository.All);
 
-            if (!CompanyViewModel.Items.Contains(CompanyViewModel.SelectedItem))
+            if (CompanyViewModel.SelectedItem != null && !CompanyViewModel.Items.Contains(CompanyViewModel.SelectedItem))
             {
                 CompanyViewModel.SelectedItem = null;
             }
+
+            ResetModels();
+        }
+        private void ResetModels()
+        {
+            if (CompanyViewModel.SelectedItem == null || ClientViewModel.SelectedItem == null)
+            {
+                ClientViewModel.SelectedItem = null;
+                ClientViewModel.Items = new ObservableCollection<Client>(clientRepository.All);
+
+                BillViewModel.SelectedItem = null;
+                BillViewModel.Items.Clear();
+
+                ProductViewModel.SelectedItem = null;
+                ProductViewModel.Items.Clear();
+
+                bills_ListView.Items.Refresh();
+                products_ListView.Items.Refresh();
+            }
+        }
+        private bool OnExiting()
+        {
+            MessageBoxResult result = MessageBox.Show("Kaikki tallentamattomat tiedot poistuvat, haluatko varmasti sulkea ohjelman?", "EzBilling", MessageBoxButton.YesNo);
+
+            return result == MessageBoxResult.Yes;
         }
 
         #region Main window event handlers
@@ -191,6 +220,13 @@ namespace EzBilling
 
             companyWindow.Close();
             clientWindow.Close();
+        }
+        private void MainWindow_Closing(object sender, CancelEventArgs e)
+        {
+            if (!OnExiting())
+            {
+                e.Cancel = true;
+            }
         }
         #endregion
 
@@ -224,11 +260,11 @@ namespace EzBilling
         #region Menu event handlers
         private void closeProgram_MenuItem_Click(object sender, RoutedEventArgs e)
         {
-            // TODO: wtf?
+            Close();
         }
         private void about_MenuItem_Click(object sender, RoutedEventArgs e)
         {
-            // TODO: display about menu.
+            MessageBox.Show("Simple billing application.\nLicense: WTFPL - www.wtfpl.net", "EzBilling", MessageBoxButton.OK);
         }
         private void editCompanyInfos_MenuItem_Click(object sender, RoutedEventArgs e)
         {
@@ -254,13 +290,13 @@ namespace EzBilling
             // Loop until view model selected item gets a value.
             Dispatcher.BeginInvoke(new Action(() =>
                 {
-                    while (ClientViewModel.SelectedItem == null)
-                    {
-                        Thread.Sleep(50);
-                    }
+                    Thread.Sleep(150);
 
-                    BillViewModel.Items = new ObservableCollection<Bill>(ClientViewModel.SelectedItem.Bills);
-                    BillViewModel.SelectedItem = null;
+                    if (ClientViewModel.SelectedItem != null)
+                    {
+                        BillViewModel.Items = new ObservableCollection<Bill>(ClientViewModel.SelectedItem.Bills);
+                        BillViewModel.SelectedItem = null;
+                    }
 
                     bills_ListView.Items.Refresh();
                 }));
@@ -347,13 +383,23 @@ namespace EzBilling
             {
                 string path = string.Format("Bills\\{0}\\{1}.pdf", ClientViewModel.SelectedItem.Name, BillViewModel.SelectedItem.Name);
 
-                if (File.Exists(path))
+                Client curClient = ClientViewModel.SelectedItem;
+                Bill curBill = BillViewModel.SelectedItem;
+
+                for (int i = 0; i < curBill.Products.Count; i++)
                 {
-                    File.Delete(path);
+                    curBill.Products.Remove(curBill.Products[i]);
+                    clientRepository.InsertOrUpdate(curClient);
+                    clientRepository.Save();
                 }
 
-                ClientViewModel.SelectedItem.Bills.Remove(BillViewModel.SelectedItem);
-                clientRepository.InsertOrUpdate(ClientViewModel.SelectedItem);
+                billManager.RemoveKnownBill(curBill.Name);
+
+                curClient.Bills.Remove(curBill);
+                billRepository.Delete(curBill);
+                billRepository.Save();
+
+                clientRepository.InsertOrUpdate(curClient);
                 clientRepository.Save();
 
                 BillViewModel.Items.Remove(BillViewModel.SelectedItem);
@@ -392,6 +438,10 @@ namespace EzBilling
                 ClientViewModel.SelectedItem.Bills.Add(BillViewModel.SelectedItem);
                 clientRepository.InsertOrUpdate(ClientViewModel.SelectedItem);
                 clientRepository.Save();
+
+                ClientViewModel.SelectedItem.Bills.Remove(BillViewModel.SelectedItem);
+                BillViewModel.SelectedItem = billRepository.First(b => b.Name == BillViewModel.SelectedItem.Name);
+                ClientViewModel.SelectedItem.Bills.Add(BillViewModel.SelectedItem);
 
                 MessageBox.Show("Lasku tallennettu.", "EzBilling", MessageBoxButton.OK);
             }

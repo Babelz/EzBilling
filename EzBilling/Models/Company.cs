@@ -18,7 +18,7 @@ namespace EzBilling.Models
         public string Phone { get; set; }
         public virtual ICollection<Bill> Bills { get; set; }
         
-        // For being lazy and so that BillWriter can understand this.
+        // For being lazy and so that the BillWriter can understand this.
         [NotMapped]
         public string Street
         {

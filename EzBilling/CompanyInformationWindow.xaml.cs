@@ -37,6 +37,8 @@ namespace EzBilling
         #region Vars
         private readonly InformationWindowController<Company> controller;
         private readonly CompanyRepository companyRepository;
+        private readonly BillRepository billRepository;
+        private readonly BillManager billManager;
         #endregion
 
         #region Properties
@@ -47,9 +49,11 @@ namespace EzBilling
         }
         #endregion
 
-        public companyWindow(CompanyRepository companyRepository)
+        public companyWindow(CompanyRepository companyRepository, BillRepository billRepository, BillManager billManager)
         {
             this.companyRepository = companyRepository;
+            this.billRepository = billRepository;
+            this.billManager = billManager;
             
             CompanyWindowViewModel = new InformationWindowViewModel<Company>();
             CompanyWindowViewModel.Items = new ObservableCollection<Company>(companyRepository.All.ToList());
@@ -116,6 +120,26 @@ namespace EzBilling
         }
         private void RemoveFromDatabase(Company company)
         {
+            Bill[] bills = billRepository.All
+                .Where(b => b.CompanyID == CompanyWindowViewModel.SelectedItem.CompanyID)
+                .ToArray();
+
+            for (int i = 0; i < bills.Length; i++)
+            {
+                for (int j = 0; j < bills[i].Products.Count; j++)
+                {
+                    bills[i].Products.Remove(bills[i].Products[j]);
+
+                    billRepository.InsertOrUpdate(bills[i]);
+                    billRepository.Save();
+                }
+
+                billManager.RemoveKnownBill(bills[i].Name);
+
+                billRepository.Delete(bills[i]);
+                billRepository.Save();
+            }
+
             CompanyWindowViewModel.Items.Remove(company);
             companyRepository.Delete(company);
 
@@ -128,8 +152,12 @@ namespace EzBilling
         }
         private void AddToDatabase(Company company)
         {
-            CompanyWindowViewModel.Items.Add(company);
+            //CompanyWindowViewModel.Items.Add(company);
             companyRepository.InsertOrUpdate(company);
+            Company updatedInfo = companyRepository.First(c => c.CompanyID == company.CompanyID);
+
+            CompanyWindowViewModel.SelectedItem = updatedInfo;
+            CompanyWindowViewModel.Items.Add(updatedInfo);
 
             companyRepository.Save();
         }
@@ -153,7 +181,7 @@ namespace EzBilling
         }
         private void deletecompany_Button_Click(object sender, RoutedEventArgs e)
         {
-            controller.DeleteInformation(string.Format("Haluatko varmasti poistaa yrityksen {0} tiedot?", CompanyWindowViewModel.SelectedItem.Name), RemoveFromDatabase);
+            controller.DeleteInformation(string.Format("Haluatko varmasti poistaa yrityksen {0} tiedot? Kaikki yrityksen tekemät laskut poistetaan myös.",                                                                        CompanyWindowViewModel.SelectedItem.Name), RemoveFromDatabase);
         }
         private void resetFields_Button_Click(object sender, RoutedEventArgs e)
         {

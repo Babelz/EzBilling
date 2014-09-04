@@ -44,7 +44,7 @@ namespace EzBilling.Database
 
         public T First(Func<T, bool> predicate)
         {
-            return Find(predicate).First();
+            return Find(predicate).FirstOrDefault(predicate);
         }
     }
 }

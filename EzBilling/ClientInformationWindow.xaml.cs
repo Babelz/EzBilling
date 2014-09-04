@@ -34,6 +34,8 @@ namespace EzBilling
         #region Vars
         private readonly InformationWindowController<Client> controller;
         private readonly ClientRepository clientRepository;
+        private readonly BillRepository billRepository;
+        private readonly BillManager billManager;
         #endregion
 
         #region Properties
@@ -44,9 +46,11 @@ namespace EzBilling
         }
         #endregion
 
-        public clientWindow(ClientRepository clientRepository)
+        public clientWindow(ClientRepository clientRepository, BillRepository billRepository, BillManager billManager)
         {
             this.clientRepository = clientRepository;
+            this.billRepository = billRepository;
+            this.billManager = billManager;
 
             ClientWindowViewModel = new InformationWindowViewModel<Client>();
             ClientWindowViewModel.Items = new ObservableCollection<Client>(clientRepository.All.ToList());
@@ -92,6 +96,26 @@ namespace EzBilling
         }
         private void RemoveFromDatabase(Client client)
         {
+            for (int i = 0; i < client.Bills.Count; i++)
+            {
+                for (int j = 0; j < client.Bills[i].Products.Count; j++)
+                {
+                    client.Bills[i].Products.Remove(client.Bills[i].Products[j]);
+                    clientRepository.InsertOrUpdate(client);
+                    clientRepository.Save();
+                }
+
+                Bill bill = client.Bills[i];
+                client.Bills.Remove(bill);
+                billManager.RemoveKnownBill(bill.Name);
+
+                billRepository.Delete(bill);
+                billRepository.Save();
+
+                clientRepository.InsertOrUpdate(client);
+                clientRepository.Save();
+            }
+
             ClientWindowViewModel.Items.Remove(client);
             clientRepository.Delete(client);
 
@@ -129,7 +153,7 @@ namespace EzBilling
         }
         private void deleteclient_Button_Click(object sender, RoutedEventArgs e)
         {
-            controller.DeleteInformation(string.Format("Halutko varmasti poistaa asiakkaan {0} tiedot?", ClientWindowViewModel.SelectedItem.Name), RemoveFromDatabase);
+            controller.DeleteInformation(string.Format("Halutko varmasti poistaa asiakkaan {0} tiedot? Asiakkaan laskut poistetaan myös.", ClientWindowViewModel.SelectedItem.Name),                                              RemoveFromDatabase);
         }
         private void resetFields_Button_Click(object sender, RoutedEventArgs e)
         {
