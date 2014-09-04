@@ -62,8 +62,6 @@ namespace EzBilling.Models
                 return total.ToString("00.00");
             }
         }
-
-
         #endregion
 
         public Bill()

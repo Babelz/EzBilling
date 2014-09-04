@@ -14,6 +14,7 @@ using EzBilling.Components;
 using EzBilling.Models;
 using System.Windows.Documents;
 using System.Diagnostics;
+using System.Threading;
 
 namespace EzBilling
 {
@@ -250,13 +251,19 @@ namespace EzBilling
         {
             newBill_Button.IsEnabled = clientName_ComboBox.SelectedIndex != -1;
 
-            if (ClientViewModel.SelectedItem != null)
-            {
-                BillViewModel.Items = new ObservableCollection<Bill>(ClientViewModel.SelectedItem.Bills);
-                BillViewModel.SelectedItem = null;
-            }
+            // Loop until view model selected item gets a value.
+            Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    while (ClientViewModel.SelectedItem == null)
+                    {
+                        Thread.Sleep(50);
+                    }
 
-            bills_ListView.Items.Refresh();
+                    BillViewModel.Items = new ObservableCollection<Bill>(ClientViewModel.SelectedItem.Bills);
+                    BillViewModel.SelectedItem = null;
+
+                    bills_ListView.Items.Refresh();
+                }));
         }
         #endregion
 
@@ -343,11 +350,11 @@ namespace EzBilling
                 if (File.Exists(path))
                 {
                     File.Delete(path);
-
-                    ClientViewModel.SelectedItem.Bills.Remove(BillViewModel.SelectedItem);
-                    clientRepository.InsertOrUpdate(ClientViewModel.SelectedItem);
-                    clientRepository.Save();
                 }
+
+                ClientViewModel.SelectedItem.Bills.Remove(BillViewModel.SelectedItem);
+                clientRepository.InsertOrUpdate(ClientViewModel.SelectedItem);
+                clientRepository.Save();
 
                 BillViewModel.Items.Remove(BillViewModel.SelectedItem);
                 BillViewModel.SelectedItem = null;
